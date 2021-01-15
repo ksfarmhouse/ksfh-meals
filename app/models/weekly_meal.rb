@@ -8,8 +8,6 @@ class WeeklyMeal < ApplicationRecord
     :fri_lunch, :fri_dinner,
     presence: true
 
-  validates_uniqueness_of :member_id
-
   def self.create_in_meals
     WeeklyMeal.new(
       mon_lunch: "LI", mon_dinner: "DI",

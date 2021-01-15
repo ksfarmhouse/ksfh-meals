@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2021_01_13_015723) do
 
   create_table "meals", force: :cascade do |t|
     t.integer "member_id", null: false
-    t.date "date", default: "2021-01-15", null: false
+    t.date "date", default: -> { "CURRENT_DATE" }, null: false
     t.string "lunch", limit: 2, default: "LI", null: false
     t.string "dinner", limit: 2, default: "DI", null: false
     t.integer "lunch_qty", default: 1, null: false
