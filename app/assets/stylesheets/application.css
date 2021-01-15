@@ -13,4 +13,209 @@
  *= require_tree .
  *= require_self
  */
- @import 'FhStyle'
+#background {
+  background-color: #006938;
+  height: 100%;
+}
+
+table, th, td {
+  border: solid 0px #006938;
+  padding: 3px;
+  margin: auto;
+  border-collapse: collapse;
+}
+
+table {
+  border: solid 3px #006938;
+}
+
+td {
+  text-align: left;
+}
+
+table tr:nth-child(odd) {
+  background-color: #ffce00;
+}
+
+table tr:nth-child(even) {
+  background-color: white;
+}
+
+table h3 {
+  padding: 0px;
+  margin: 2px;
+  width: 100%;
+}
+
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 600px;
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: white;
+  padding: 2px 20px 20px 20px;
+  color: #000;
+  position: relative;
+  margin: auto;
+  margin-top: 25px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #ffce00;
+  border-radius: 1em;
+  box-shadow: rgba(0,0,0, .75) 0px 0px 20px, rgba(0,0,0, .75) 0px 0px 5px inset;
+  overflow: auto;
+}
+
+.box {
+  flex: 0 1 250px;
+}
+
+.box form {
+  width: 100%;
+}
+
+.box h1 {
+  color: #006938;
+  text-align: center;
+  margin-bottom: 5px;
+  padding: 0px;
+  width: 100%;
+}
+
+.box input[type=date] {
+  width: 128px;
+}
+
+.box input[type=number] {
+  width: 25px;
+}
+
+.box input[type=submit] {
+  background-color: #006938;
+  font-size: 1em;
+  font-weight: 600;
+  color: #ffce00;
+  border-radius: 2px;
+  border: 1px solid #006938;
+  box-shadow: rgba(0,0,0,.75) 0px 0px 4px;
+}
+
+.box input[type=submit]:hover {
+  background-color: #006938;
+  color: white;
+}
+
+.box p {
+  width: 100%;
+  margin: 5px;
+  font-weight: 600;
+}
+
+#navigation {
+  text-align: center;
+  padding: 10px;
+}
+
+#navigation h3 {
+  margin: 2px;
+  text-align: center;
+  width: 100%;
+  color: #006938;
+}
+
+#navigation a {
+  color: #006938;
+  text-decoration: none;
+}
+
+#navigation a:hover {
+  color: #ffce00;
+}
+
+.message {
+  background-color: #ffce00;
+  color: #54575a;
+  box-shadow: rgba(0,0,0,.75) 0px 0px 5px;
+  text-align: center;
+  border-radius: 0.5em;
+  width: 100%;
+  height: 1.25em;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+@media only screen and (max-width: 1080px) {
+  body {
+    font-size: 30px;
+  }
+
+  h1 {
+    font-size: 65px;
+  }
+
+  h3 {
+    font-size: 45px;
+  }
+
+  p {
+    font-size: 30px;
+  }
+
+  input, select {
+    font-size: 30px;
+    height: 60px;
+  }
+  
+  .box {
+    max-width: 1080px;
+    width: 90%;
+  }
+  
+  .box input[type=number] {
+    text-align: center;
+    width: 35px;
+  }
+  
+  .box input[type=date] {
+    width: 250px;
+  }
+}
+
+#page-container {
+  position: relative;
+  min-height: 100%;
+}
+
+#content-wrap {
+  padding-bottom: 1rem;
+  min-height: calc(100vh - 165px);
+}
+
+#footer {
+  text-align: center;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.flash {
+  padding: 5px 0px;
+  margin: auto;
+  margin-top: 10px;
+  box-shadow: rgba(0,0,0,.75) 0px 0px 5px;
+  text-align: center;
+  border-radius: 0.5em;
+  width: 70%;
+  height: 1.25em;
+  color: white;
+}
+
+.flash.alert {
+  background-color: red;
+}
+
+.flash.notice {
+  background-color: #006938;
+}
