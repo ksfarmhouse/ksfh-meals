@@ -1,0 +1,15 @@
+<%= f.label :member_id, "User ID:" %>
+<%= f.text_field :member_id, size: 2, required: true %>
+<br><br>
+
+<%= f.label :first, "First Name:" %>
+<%= f.text_field :first, size: 20, required: true %>
+<br><br>
+
+<%= f.label :last, "Last Name:" %>
+<%= f.text_field :last, size: 20, required: true %>
+<br><br>
+
+<%= f.label :status, "Status:" %>
+<%= f.select :status, options_for_select(User::USER_STATUSES, @user.status) %>
+<br><br>

@@ -16,47 +16,51 @@ ActiveRecord::Schema.define(version: 2021_01_13_015723) do
   enable_extension "plpgsql"
 
   create_table "meals", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.date "date", null: false
-    t.string "lunch", limit: 2, null: false
-    t.string "dinner", limit: 2, null: false
-    t.integer "lunch_qty", null: false
-    t.integer "dinner_qty", null: false
+    t.integer "member_id", null: false
+    t.date "date", default: "2021-01-14", null: false
+    t.string "lunch", limit: 2, default: "LI", null: false
+    t.string "dinner", limit: 2, default: "DI", null: false
+    t.integer "lunch_qty", default: 1, null: false
+    t.integer "dinner_qty", default: 1, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["member_id", "date"], name: "index_meals_on_member_id_and_date", unique: true
   end
 
   create_table "menu", force: :cascade do |t|
-    t.date "date", null: false
+    t.date "date", default: "2021-01-14", null: false
     t.string "lunch", limit: 70
     t.string "dinner", limit: 70
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["date"], name: "index_menu_on_date", unique: true
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.integer "member_id", null: false
     t.string "first", null: false
     t.string "last", null: false
-    t.boolean "out_of_house", default: true, null: false
+    t.string "status", limit: 1, default: "I", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["member_id"], name: "index_users_on_member_id", unique: true
   end
 
   create_table "weekly_meals", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "mon_lunch", limit: 2, null: false
-    t.string "mon_dinner", limit: 2, null: false
-    t.string "tue_lunch", limit: 2, null: false
-    t.string "tue_dinner", limit: 2, null: false
-    t.string "wed_lunch", limit: 2, null: false
-    t.string "wed_dinner", limit: 2, null: false
-    t.string "thu_lunch", limit: 2, null: false
-    t.string "thu_dinner", limit: 2, null: false
-    t.string "fri_lunch", limit: 2, null: false
-    t.string "fri_dinner", limit: 2, null: false
+    t.integer "member_id", null: false
+    t.string "mon_lunch", limit: 2, default: "LI", null: false
+    t.string "mon_dinner", limit: 2, default: "DI", null: false
+    t.string "tue_lunch", limit: 2, default: "LI", null: false
+    t.string "tue_dinner", limit: 2, default: "DI", null: false
+    t.string "wed_lunch", limit: 2, default: "LI", null: false
+    t.string "wed_dinner", limit: 2, default: "DI", null: false
+    t.string "thu_lunch", limit: 2, default: "LI", null: false
+    t.string "thu_dinner", limit: 2, default: "DI", null: false
+    t.string "fri_lunch", limit: 2, default: "LI", null: false
+    t.string "fri_dinner", limit: 2, default: "DI", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["member_id"], name: "index_weekly_meals_on_member_id", unique: true
   end
 
 end

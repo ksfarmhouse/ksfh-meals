@@ -1,0 +1,5 @@
+<% flash.each do |f| %>
+  <div class="flash <%= f.first %>" data-closable>
+    <%= f.last %>
+  </div>
+<% end %>

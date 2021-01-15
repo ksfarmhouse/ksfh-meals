@@ -185,3 +185,22 @@ table h3 {
   padding-bottom: 10px;
 }
 
+.flash {
+  padding: 5px 0px;
+  margin: auto;
+  margin-top: 10px;
+  box-shadow: rgba(0,0,0,.75) 0px 0px 5px;
+  text-align: center;
+  border-radius: 0.5em;
+  width: 70%;
+  height: 1.25em;
+  color: white;
+}
+
+.flash.alert {
+  background-color: red;
+}
+
+.flash.notice {
+  background-color: #006938;
+}

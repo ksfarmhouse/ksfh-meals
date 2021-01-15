@@ -1,10 +1,24 @@
 class User < ApplicationRecord
   has_many :meals
   has_one :weekly_meal
-  validates :user_id, :first, :last_name, :out_of_house, presence: true
+  validates :member_id, :first, :last, :status, presence: true
+  validates_uniqueness_of :member_id
 
-  def in_house_member?
-    !out_of_house?
+  USER_STATUSES =
+  [["In House", "I"],
+   ["Out of House", "O"],
+   ["Alumni", "A"]]
+
+  def in_house?
+    status == "I"
+  end
+
+  def out_of_house?
+    status == "O"
+  end
+
+  def alumni?
+    status == "A"
   end
 
   def full_name

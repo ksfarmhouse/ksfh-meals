@@ -1,0 +1,25 @@
+<h1>FarmHouse Meal Sign Up</h1>
+
+<%= form_for @meal, :url => {:action => "update"} do |f| %>
+  <%= f.label :member_id, "Member ID:" %>
+  <%= f.text_field :member_id, size: 2, required: true %>
+  <br><br>
+
+  <%= f.label :date %>
+  <%= f.text_field :date, value: DateTime.current().to_date.strftime("%Y-%m-%d"), data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'input-group-field datetime' %>
+  <br><br>
+
+  <%= f.label :lunch %>
+  <%= f.select :lunch, options_for_select(Meal::LUNCH_TYPES) %>
+  <%= f.label :lunch_qty %>
+  <%= f.number_field :lunch_qty, value: 1 %>
+  <br><br>
+
+  <%= f.label :dinner %>
+  <%= f.select :dinner, options_for_select(Meal::DINNER_TYPES) %>
+  <%= f.label :dinner_qty %>
+  <%= f.number_field :dinner_qty, value: 1 %>
+  <br><br>
+
+  <%= f.submit "Submit" %>
+<% end %>

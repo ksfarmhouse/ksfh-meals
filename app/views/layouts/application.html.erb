@@ -10,6 +10,7 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <%#= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
@@ -18,7 +19,10 @@
     <div id="page-container">
       <div id="content-wrap">
         <%= render "layouts/header" %>
-        <%= yield %>
+        <div class="box">
+          <%= render 'layouts/flash' if flash.present? %>
+          <%= yield %>
+        </div>
       </div>
       <%= render "layouts/footer" %>
     </div>
