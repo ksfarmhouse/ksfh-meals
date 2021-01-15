@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2021_01_13_015723) do
 
   create_table "meals", force: :cascade do |t|
     t.integer "member_id", null: false
-    t.date "date", default: "2021-01-14", null: false
+    t.date "date", default: "2021-01-15", null: false
     t.string "lunch", limit: 2, default: "LI", null: false
     t.string "dinner", limit: 2, default: "DI", null: false
     t.integer "lunch_qty", default: 1, null: false
@@ -27,23 +27,23 @@ ActiveRecord::Schema.define(version: 2021_01_13_015723) do
     t.index ["member_id", "date"], name: "index_meals_on_member_id_and_date", unique: true
   end
 
-  create_table "menu", force: :cascade do |t|
-    t.date "date", default: "2021-01-14", null: false
-    t.string "lunch", limit: 70
-    t.string "dinner", limit: 70
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["date"], name: "index_menu_on_date", unique: true
-  end
-
-  create_table "users", force: :cascade do |t|
+  create_table "members", force: :cascade do |t|
     t.integer "member_id", null: false
     t.string "first", null: false
     t.string "last", null: false
     t.string "status", limit: 1, default: "I", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["member_id"], name: "index_users_on_member_id", unique: true
+    t.index ["member_id"], name: "index_members_on_member_id", unique: true
+  end
+
+  create_table "menu", force: :cascade do |t|
+    t.date "date", default: "2021-01-15", null: false
+    t.string "lunch", limit: 70
+    t.string "dinner", limit: 70
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["date"], name: "index_menu_on_date", unique: true
   end
 
   create_table "weekly_meals", force: :cascade do |t|

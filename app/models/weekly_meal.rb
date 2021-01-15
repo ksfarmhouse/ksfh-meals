@@ -1,5 +1,5 @@
 class WeeklyMeal < ApplicationRecord
-  has_one :user
+  has_one :member
   validates :member_id,
     :mon_lunch, :mon_dinner,
     :tue_lunch, :tue_dinner,

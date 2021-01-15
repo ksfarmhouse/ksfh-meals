@@ -11,7 +11,7 @@ class MealsController < ApplicationController
     member_id = params[:meal][:member_id]
 
     respond_to do |format|
-      if User.where(member_id: member_id).blank?
+      if Member.where(member_id: member_id).blank?
         format.html {redirect_to edit_meals_path, alert: "Unable to Find Member"}
       else
         meal = Meal.where(member_id: member_id, date: params[:meal][:date])

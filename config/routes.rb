@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "meals#edit"
-  resource :users
+  resource :members
   resource :meals, only: [:index, :edit]
   post "/meals", to: "meals#update"
   resource :weekly_meals, only: [:index, :edit, :update]

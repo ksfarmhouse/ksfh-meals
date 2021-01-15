@@ -1,6 +1,6 @@
-class CreateUsers < ActiveRecord::Migration[6.1]
+class CreateMembers < ActiveRecord::Migration[6.1]
   def change
-    create_table :users do |t|
+    create_table :members do |t|
       t.integer :member_id, null: false
       t.string :first, null: false
       t.string :last, null: false
@@ -8,6 +8,6 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       t.timestamps
     end
 
-    add_index :users, :member_id, unique: true
+    add_index :members, :member_id, unique: true
   end
 end

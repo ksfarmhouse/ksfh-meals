@@ -1,5 +1,5 @@
 class Meal < ApplicationRecord
-  has_one :user
+  has_one :member
   validates :member_id, :date, :lunch, :dinner, :lunch_qty, :dinner_qty, presence: true
   validates_uniqueness_of :member_id, scope: :date
   

@@ -1,4 +1,4 @@
-class User < ApplicationRecord
+class Member < ApplicationRecord
   has_many :meals
   has_one :weekly_meal
   validates :member_id, :first, :last, :status, presence: true

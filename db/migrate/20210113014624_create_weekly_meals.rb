@@ -1,7 +1,7 @@
 class CreateWeeklyMeals < ActiveRecord::Migration[6.1]
   def change
     create_table :weekly_meals do |t|
-      t.integer :member_id, foreign_key: { to_table: :users, column: :member_id }, null: false, unique: true
+      t.integer :member_id, foreign_key: { to_table: :member, column: :member_id }, null: false, unique: true
       t.string :mon_lunch, null: false, limit: 2, default: "LI"
       t.string :mon_dinner, null: false, limit: 2, default: "DI"
       t.string :tue_lunch, null: false, limit: 2, default: "LI"
