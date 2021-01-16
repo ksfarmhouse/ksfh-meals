@@ -33,6 +33,14 @@ class MealsController < ApplicationController
     end
   end
 
+  def late_plates
+  end
+
+  def cook
+    @meal = Meal.new
+  end
+
+  private
   def meal_params
     params.require(:meal).permit(:member_id, :date, :lunch, :lunch_qty, :dinner, :dinner_qty)
   end

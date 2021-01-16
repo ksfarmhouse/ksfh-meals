@@ -219,3 +219,7 @@ table h3 {
 .flash.notice {
   background-color: #006938;
 }
+
+.center {
+  text-align: center;
+}

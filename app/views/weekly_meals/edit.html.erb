@@ -1,0 +1,48 @@
+<h1>Permanent Sign Up</h1>
+
+<%= form_for @weekly_meals, url: weekly_meals_path, html: { method: :post } do |f| %>
+  <div class="center">
+    <%= f.label :member_id, "Member ID:" %>
+    <%= f.text_field :member_id, size: 2, disabled: true %>
+    <%= f.hidden_field :member_id, value: params[:weekly_meal][:member_id] %>
+  </div>
+  <br>
+
+  <table>
+    <tr>
+      <td></td>
+      <td>Lunch</td>
+      <td>Dinner</td>
+    </tr>
+    <tr>
+      <td>Monday</td>
+      <td><%= f.select :mon_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.mon_lunch) %></td>
+      <td><%= f.select :mon_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.mon_dinner) %></td>
+    </tr>
+    <tr>
+      <td>Tuesday</td>
+      <td><%= f.select :tue_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.tue_lunch) %></td>
+      <td><%= f.select :tue_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.tue_dinner) %></td>
+    </tr>
+    <tr>
+      <td>Wednesday</td>
+      <td><%= f.select :wed_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.wed_lunch) %></td>
+      <td><%= f.select :wed_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.wed_dinner) %></td>
+    </tr>
+    <tr>
+      <td>Thursday</td>
+      <td><%= f.select :thu_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.thu_lunch) %></td>
+      <td><%= f.select :thu_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.thu_dinner) %></td>
+    </tr>
+    <tr>
+      <td>Friday</td>
+      <td><%= f.select :fri_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.fri_lunch) %></td>
+      <td><%= f.select :fri_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.fri_dinner) %></td>
+    </tr>
+  </table>
+  <br>
+
+  <div class="center">
+    <%= f.submit "Update Meals" %>
+  </div>
+<% end %>

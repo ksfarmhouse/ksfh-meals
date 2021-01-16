@@ -1,0 +1,13 @@
+<h1>Permanent Sign Up</h1>
+
+<%= form_for @weekly_meals, url: edit_weekly_meals_path(@weekly_meals), html: { method: :get } do |f| %>
+  <div class="center">
+    <%= f.label :member_id, "Member ID" %>
+    <%= f.text_field :member_id, size: 2, required: true %>
+    <br><br>
+  </div>
+  <div class="center">
+    <%= f.submit "Submit" %>
+  </div>
+
+<% end %>

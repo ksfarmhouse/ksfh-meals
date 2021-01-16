@@ -1,0 +1,32 @@
+<% @lunch_late_plates = lunch_late_plates %>
+<% @dinner_late_plates = dinner_late_plates %>
+
+<h1> Late Plates </h1>
+
+<h1>Lunch</h1>
+<% if @lunch_late_plates.blank? %>
+  <div class="center" style="display: contents;"><p>No Late Plates</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td><b>Name</b></td>
+    </tr>
+    <% @lunch_late_plates.each do |ll| %>
+      <tr><td><%= ll.full_name %></td></tr>
+    <% end %>
+  </table>
+<% end %>
+
+<h1>Dinner</h1>
+<% if @dinner_late_plates.blank? %>
+  <div class="center" style="display: contents;"><p>No Late Plates</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td><b>Name</b></td>
+    </tr>
+    <% @dinner_late_plates.each do |ll| %>
+      <tr><td><%= ll.full_name %></td></tr>
+    <% end %>
+  </table>
+<% end %>
