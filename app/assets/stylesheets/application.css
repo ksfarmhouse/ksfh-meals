@@ -146,7 +146,7 @@ table h3 {
   display: none;
 }
 
-@media only screen and (max-width: 1080px) {
+/*@media only screen and (max-width: 1080px) {
   body {
     font-size: 30px;
   }
@@ -181,7 +181,7 @@ table h3 {
   .box input[type=date] {
     width: 250px;
   }
-}
+}*/
 
 #page-container {
   position: relative;

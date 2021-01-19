@@ -1,0 +1,35 @@
+<h1>Meal Count by Member</h1>
+
+<%= form_for @treasurer, url: meals_path(@treasurer), html: {method: :get} do |f| %>
+  <div class="center">
+    <%= f.label :start_date, "Start Date" %>
+    <%= f.text_field :start_date, value: @treasurer.start_date, data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
+
+    <%= f.label :end_date, "End Date" %>
+    <%= f.text_field :end_date, value: @treasurer.end_date, data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
+    <br><br>
+    <%= f.submit "Change Date" %>
+    <br><br>
+  </div>
+<% end %>
+
+<% meal_count = meal_count_by_member(@treasurer.start_date, @treasurer.end_date) %>
+
+<% if meal_count.blank? %>
+  <div class="center" style="display: contents;"><p>No Extra Meals</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td><b>Member</b></td>
+      <td><b>Lunches</b></td>
+      <td><b>Dinners</b></td>
+    </tr>
+    <% meal_count.each do |member, meals| %>
+      <tr>
+        <td><%= member.full_name %></td>
+        <td class="center"><%= meals["lunch"] %></td>
+        <td class="center"><%= meals["dinner"] %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

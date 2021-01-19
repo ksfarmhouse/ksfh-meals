@@ -2,9 +2,10 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "meals#edit"
   resource :members
-  resource :meals, only: [:index, :edit]
+  resource :meals, only: [:edit]
   post "/meals", to: "meals#update"
-  resource :weekly_meals, only: [:index, :edit]
+  get "/meals", to: "meals#index"
+  resource :weekly_meals, only: [:edit]
   post "/weekly_meals", to: "weekly_meals#update"
   get "/weekly_meals", to: "weekly_meals#index"
   resource :menu, except: [:show]

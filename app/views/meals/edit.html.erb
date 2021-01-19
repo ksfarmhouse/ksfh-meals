@@ -6,7 +6,7 @@
   <br><br>
 
   <%= f.label :date %>
-  <%= f.text_field :date, value: Date.today.to_date.strftime("%Y-%m-%d"), data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'input-group-field datetime' %>
+  <%= f.text_field :date, value: Date.today.to_date.strftime("%Y-%m-%d"), data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
   <br><br>
 
   <%= f.label :lunch %>

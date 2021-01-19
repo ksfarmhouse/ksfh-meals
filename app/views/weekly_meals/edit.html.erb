@@ -11,31 +11,31 @@
   <table>
     <tr>
       <td></td>
-      <td>Lunch</td>
-      <td>Dinner</td>
+      <td><b>Lunch</b></td>
+      <td><b>Dinner</b></td>
     </tr>
     <tr>
-      <td>Monday</td>
+      <td><b>Monday</b></td>
       <td><%= f.select :mon_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.mon_lunch) %></td>
       <td><%= f.select :mon_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.mon_dinner) %></td>
     </tr>
     <tr>
-      <td>Tuesday</td>
+      <td><b>Tuesday</b></td>
       <td><%= f.select :tue_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.tue_lunch) %></td>
       <td><%= f.select :tue_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.tue_dinner) %></td>
     </tr>
     <tr>
-      <td>Wednesday</td>
+      <td><b>Wednesday</b></td>
       <td><%= f.select :wed_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.wed_lunch) %></td>
       <td><%= f.select :wed_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.wed_dinner) %></td>
     </tr>
     <tr>
-      <td>Thursday</td>
+      <td><b>Thursday</b></td>
       <td><%= f.select :thu_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.thu_lunch) %></td>
       <td><%= f.select :thu_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.thu_dinner) %></td>
     </tr>
     <tr>
-      <td>Friday</td>
+      <td><b>Friday</b></td>
       <td><%= f.select :fri_lunch, options_for_select(Meal::LUNCH_TYPES, @weekly_meals.fri_lunch) %></td>
       <td><%= f.select :fri_dinner, options_for_select(Meal::DINNER_TYPES, @weekly_meals.fri_dinner) %></td>
     </tr>

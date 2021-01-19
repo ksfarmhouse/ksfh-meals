@@ -5,7 +5,7 @@
 <%#= form_for @meal, url: cook_url(date: @meal.date), html: {method: :post} do |f| %>
   <!-- <div class="center">
     <%#= f.label :date, "Date" %>
-    <%#= f.text_field :date, value: Date.today.to_date.strftime("%Y-%m-%d"), data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'input-group-field datetime' %>
+    <%#= f.text_field :date, value: Date.today.to_date.strftime("%Y-%m-%d"), data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
     <br><br>
     <%#= f.submit "Change Date" %>
     <br><br>
@@ -15,20 +15,20 @@
 <table>
   <tr>
     <td></td>
-    <td>In</td>
-    <td>Early</td>
-    <td>Late</td>
-    <td>Total</td>
+    <td><b>In</b></td>
+    <td><b>Early</b></td>
+    <td><b>Late</b></td>
+    <td><b>Total</b></td>
   </tr>
   <tr>
-    <td>Lunch</td>
+    <td><b>Lunch</b></td>
     <td class="center"><%= meals["LI"] %></td>
     <td class="center"><%= meals["LE"] %></td>
     <td class="center"><%= meals["LL"] %></td>
     <td class="center"><%= meals["LI"] + meals["LE"] + meals["LL"] %></td>
   </tr>
   <tr>
-    <td>Dinner</td>
+    <td><b>Dinner</b></td>
     <td class="center"><%= meals["DI"] %></td>
     <td class="center"><%= meals["DE"] %></td>
     <td class="center"><%= meals["DL"] %></td>

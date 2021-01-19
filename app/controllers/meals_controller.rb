@@ -1,6 +1,11 @@
 class MealsController < ApplicationController
   def index
-
+    start_date = params[:treasurer] && params[:treasurer][:start_date]
+    end_date = params[:treasurer] && params[:treasurer][:end_date]
+    @treasurer = Treasurer.new(
+      start_date: start_date || Date.today - 1.month,
+      end_date: end_date || Date.today
+    )
   end
 
   def edit
@@ -42,6 +47,6 @@ class MealsController < ApplicationController
 
   private
   def meal_params
-    params.require(:meal).permit(:member_id, :date, :lunch, :lunch_qty, :dinner, :dinner_qty)
+    params.require(:meal).permit(:member_id, :date, :start_date, :end_date, :lunch, :lunch_qty, :dinner, :dinner_qty)
   end
 end
