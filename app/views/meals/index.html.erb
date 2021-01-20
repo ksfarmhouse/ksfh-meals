@@ -3,10 +3,10 @@
 <%= form_for @treasurer, url: meals_path(@treasurer), html: {method: :get} do |f| %>
   <div class="center">
     <%= f.label :start_date, "Start Date" %>
-    <%= f.text_field :start_date, value: @treasurer.start_date, data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
+    <%= f.text_field :start_date, value: @treasurer.start_date, autocomplete: "off", class: 'date' %>
 
     <%= f.label :end_date, "End Date" %>
-    <%= f.text_field :end_date, value: @treasurer.end_date, data: { inputmask: "'alias': 'yyyy-mm-dd'" }, autocomplete: "off", pattern: '[\d]{4}[-\/][\d]{1,2}[-\/][\d]{1,2}', title: "YYYY-MM-DD", class: 'date' %>
+    <%= f.text_field :end_date, value: @treasurer.end_date, autocomplete: "off", class: 'date' %>
     <br><br>
     <%= f.submit "Change Date" %>
     <br><br>

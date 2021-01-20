@@ -1,5 +1,5 @@
 <h1>Update Member</h1>
 
-<%= form_for @member, url: members_path(@member), html: { method: :put } do |f| %>
+<%= form_for @member, url: members_path(id: @member.id), html: { method: :put } do |f| %>
   <%= render 'form', f: f %>
 <% end %>

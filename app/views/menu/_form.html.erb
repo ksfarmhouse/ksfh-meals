@@ -1,0 +1,13 @@
+<%= f.label :date %>
+<%= f.text_field :date, value: @menu.date, autocomplete: "off", disabled: @menu.persisted?, class: 'date' %>
+<br><br>
+
+<%= f.label :lunch %>
+<%= f.text_field :lunch, size: 20, maxlength: 70, required: true %>
+<br><br>
+
+<%= f.label :dinner %>
+<%= f.text_field :dinner, size: 20, maxlength: 70, required: true %>
+<br><br>
+
+<%= f.submit %>

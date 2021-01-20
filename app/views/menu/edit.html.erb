@@ -1,0 +1,5 @@
+<h1> Edit Menu Item </h1>
+
+<%= form_for @menu, url: menu_edit_path(id: @menu.id) do |f| %>
+  <%= render 'form', f: f %>
+<% end %>

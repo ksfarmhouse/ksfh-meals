@@ -32,7 +32,14 @@ class MembersController < ApplicationController
   end
 
   def update
-    @member = Member.new();
+    @member = Member.find(params[:id])
+    respond_to do |format|
+      if @member.update(user_params)
+        format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated!"}
+      else
+        format.html {redirect_to edit_members_path(id: @member.id), alert: "Unable to Update Member!"}
+      end
+    end
   end
 
   def show
