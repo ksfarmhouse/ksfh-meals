@@ -5,6 +5,12 @@
 <% if @members.blank? %>
   <div class="center" style="display: contents;"><p>No Members</p></div>
 <% else %>
+  <p class="center" style="font-weight: normal;">
+    <%= @members.where(status: "I").count %> In House |
+    <%= @members.where(status: "O").count %> Out of House |
+    <%= @members.where(status: "A").count %> Alumni
+  </p>
+
   <table>
     <tr>
       <td><b>Member ID</b></td>
@@ -21,7 +27,7 @@
         <td><%= member.last %></td>
         <td><%= full_status_name(member.status) %></td>
         <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-pencil"),  edit_members_path(id: member.id), style: "color: blue" %></td>
-        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"),  edit_members_path(id: member.id), style: "color: red", data: { confirm: "Are you sure you want to delete this member? (Not Implemented Yet)" } %></td>
+        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"), members_delete_path(id: member.id), style: "color: red", data: { confirm: "Are you sure you want to delete #{member.full_name}?" } %></td>
       </tr>
     <% end %>
   </table>

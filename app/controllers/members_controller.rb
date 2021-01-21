@@ -10,7 +10,7 @@ class MembersController < ApplicationController
   end
 
   def create
-    @member = Member.new(user_params)
+    @member = Member.new(member_params)
     respond_to do |format|
       if Member.where(member_id: params[:member][:member_id]).blank?
         if @member.save!
@@ -38,8 +38,24 @@ class MembersController < ApplicationController
   def update
     @member = Member.find(params[:id])
     respond_to do |format|
-      if @member.update(user_params)
-        format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated!"}
+      if @member.update(member_params)
+        if params[:member][:update_weekly_meals] == "1"
+          if @member.in_house?
+            if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.in_meals)
+              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member and Weekly Meals Updated!"}
+            else
+              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
+            end
+          else
+            if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.out_meals)
+              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member and Weekly Meals Updated!"}
+            else
+              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
+            end
+          end
+        else
+          format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated!"}
+        end
       else
         format.html {redirect_to edit_members_path(id: @member.id), alert: "Unable to Update Member!"}
       end
@@ -47,11 +63,18 @@ class MembersController < ApplicationController
   end
 
   def delete
-
+    @member = Member.find(params[:id])
+    respond_to do |format|
+      if @member.delete && WeeklyMeal.find_by(member_id: @member.member_id).delete
+        format.html {redirect_to members_path, notice: "Member Deleted!"}
+      else
+        format.html {redirect_to members_path, alert: "Unable to Delete Member!"}
+      end
+    end
   end
 
   private
-  def user_params
-    params.require(:member).permit(:member_id, :first, :last, :status)
+  def member_params
+    params.require(:member).permit(:member_id, :first, :last, :status, :update_weekly_meals)
   end
 end

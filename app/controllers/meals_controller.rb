@@ -58,7 +58,26 @@ class MealsController < ApplicationController
   end
 
   def reset_meals
+    @meals = Meal.new
     params[:admin] = true
+  end
+
+  def reset_meals_post
+    ih_status = Member.where(status: "I").map do |member|
+      weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.in_meals)
+    end
+
+    ooh_status = Member.where.not(status: "I").map do |member|
+      weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.out_meals)
+    end
+
+    respond_to do |format|
+      if ih_status.all?(true) && ooh_status.all?(true)
+        format.html {redirect_to reset_meals_path, notice: "Successfully Reset Meals!"}
+      else
+        format.html {redirect_to reset_meals_path, alert: "Only Reset #{ih_status.count(true)} In House Meals and #{ooh_status.count(true)} Out of House Meals"}
+      end
+    end
   end
 
   private

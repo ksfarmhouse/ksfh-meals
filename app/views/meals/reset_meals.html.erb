@@ -1,1 +1,9 @@
-<h1>Reset Meals</h1>
+<h1>Reset Weekly Meals</h1>
+
+<p style="font-weight: normal; margin-bottom: 15px;" class="center">This will make the weekly meals so that In House meals are In,<br> and Out of House and Alumni meals are Out.</p>
+
+<%= form_for @meals, url: reset_meals_post_path do |f| %>
+  <div class="center">
+    <%= f.submit "Reset Meals", data: {confirm: "Are you sure you want to reset the weekly meals?"} %>
+  </div>
+<% end %>

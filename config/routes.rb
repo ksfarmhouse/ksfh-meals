@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resource :members, except: [:show]
   get "/members", to: "members#index"
+  get "/members/delete", to: "members#delete"
 
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
   post "cook", to: "meals#cook"
   get "late_plates", to: "meals#late_plates"
   get "reset_meals", to: "meals#reset_meals"
+  post "reset_meals_post", to: "meals#reset_meals_post"
 
   resource :weekly_meals, only: [:edit]
   post "/weekly_meals", to: "weekly_meals#update"
@@ -26,5 +28,6 @@ Rails.application.routes.draw do
   get "/menu/edit", to: "menu#edit"
   patch "/menu/edit", to: "menu#update"
   get "/menu/list", to: "menu#list"
+  get "/menu/delete", to: "menu#delete"
 
 end

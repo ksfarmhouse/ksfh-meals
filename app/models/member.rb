@@ -4,7 +4,9 @@ class Member < ApplicationRecord
   validates :member_id, :first, :last, :status, presence: true
   validates_uniqueness_of :member_id
 
-  USER_STATUSES =
+  attr_accessor :update_weekly_meals
+
+  MEMBER_STATUSES =
   [["In House", "I"],
    ["Out of House", "O"],
    ["Alumni", "A"]]

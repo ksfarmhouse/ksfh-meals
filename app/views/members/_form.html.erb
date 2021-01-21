@@ -1,5 +1,5 @@
 <%= f.label :member_id, "Member ID:" %>
-<%= f.text_field :member_id, size: 2, required: true %>
+<%= f.text_field :member_id, size: 2, required: true, disabled: @member.persisted? %>
 <br><br>
 
 <%= f.label :first, "First Name:" %>
@@ -11,7 +11,15 @@
 <br><br>
 
 <%= f.label :status, "Status:" %>
-<%= f.select :status, options_for_select(Member::USER_STATUSES, @member.status) %>
+<%= f.select :status, options_for_select(Member::MEMBER_STATUSES, @member.status) %>
 <br><br>
+
+<% if @member.persisted? %>
+  <%= f.check_box :update_weekly_meals %>
+  <%= f.label :update_weekly_meals, "Reset Member's Weekly Meals to Match Status" %>
+  <br>
+  <p style="font-weight: normal;">^ Only use if changing from In House to something, and not reseting meals afterwards, or if you need to reset only this member's meals.</p>
+  <br>
+<% end %>
 
 <%= f.submit %>

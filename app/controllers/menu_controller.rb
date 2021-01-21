@@ -40,8 +40,19 @@ class MenuController < ApplicationController
   end
 
   def list
-    @items = Menu.where("date >= :date", date: Date.today).order(:date)
+    @items = Menu.all.order(:date)
     params[:admin] = true
+  end
+
+  def delete
+    @menu = Menu.find(params[:id])
+    respond_to do |format|
+      if @menu.delete
+        format.html {redirect_to menu_list_path, notice: "Menu Item Deleted!"}
+      else
+        format.html {redirect_to menu_list_path, alert: "Unable to Delete Menu Item!"}
+      end
+    end
   end
 
   private
