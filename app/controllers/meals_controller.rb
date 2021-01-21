@@ -38,6 +38,17 @@ class MealsController < ApplicationController
     end
   end
 
+  def list
+    start_date = params[:meal_list] && params[:meal_list][:start_date]
+    end_date = params[:meal_list] && params[:meal_list][:end_date]
+    member_id = params[:meal_list] && params[:meal_list][:member_id]
+    @meal_list = MealList.new(
+      start_date: start_date || Date.today,
+      end_date: end_date || Date.today,
+      member_id: member_id
+    )
+  end
+
   def late_plates
   end
 

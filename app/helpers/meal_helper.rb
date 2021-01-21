@@ -116,4 +116,60 @@ module MealHelper
     end
     new_members.sort_by{|m, v| m.last}
   end
+
+  def meal_count_for_member(start_date, end_date, member_id)
+    if member_id.present?
+      meals = {}
+      start_date = start_date.to_date
+      end_date = end_date.to_date
+      while start_date <= end_date
+        if start_date.on_weekday?
+          meals[start_date] = {}
+          meals[start_date]["lunch"] = "L?"
+          meals[start_date]["dinner"] = "D?"
+          meal = Meal.where(date: start_date)
+          if meal.blank?
+            case start_date.wday
+            when 1 #Monday
+              meals[start_date]["lunch"] = WeeklyMeal.find_by(member_id: member_id).mon_lunch
+              meals[start_date]["dinner"] = WeeklyMeal.find_by(member_id: member_id).mon_dinner
+            when 2 #Tueday
+              meals[start_date]["lunch"] = WeeklyMeal.find_by(member_id: member_id).tue_lunch
+              meals[start_date]["dinner"] = WeeklyMeal.find_by(member_id: member_id).tue_dinner
+            when 3 #Wednesday
+              meals[start_date]["lunch"] = WeeklyMeal.find_by(member_id: member_id).wed_lunch
+              meals[start_date]["dinner"] = WeeklyMeal.find_by(member_id: member_id).wed_dinner
+            when 4 #Thursday
+              meals[start_date]["lunch"] = WeeklyMeal.find_by(member_id: member_id).thu_lunch
+              meals[start_date]["dinner"] = WeeklyMeal.find_by(member_id: member_id).thu_dinner
+            when 5 #Friday
+              meals[start_date]["lunch"] = WeeklyMeal.find_by(member_id: member_id).fri_lunch
+              meals[start_date]["dinner"] = WeeklyMeal.find_by(member_id: member_id).fri_dinner
+            end
+          else
+            meal = meal.first!
+            meals[start_date]["lunch"] = meal.lunch
+            meals[start_date]["dinner"] = meal.dinner
+          end
+        end
+        start_date = start_date + 1.day
+      end
+      meals
+    end
+  end
+
+  def full_meal_name(code)
+    case code[1]
+    when "I"
+      "In"
+    when "O"
+      "Out"
+    when "E"
+      "Early"
+    when "L"
+      "Late"
+    else
+      "?"
+    end
+  end
 end

@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"
   get "/meals", to: "meals#index"
+  get "/meals/list", to: "meals#list"
+  post "/meals/list", to: "meals#list"
   resource :weekly_meals, only: [:edit]
   post "/weekly_meals", to: "weekly_meals#update"
   get "/weekly_meals", to: "weekly_meals#index"

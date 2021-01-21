@@ -1,0 +1,46 @@
+<h1> View Your Meals </h1>
+
+<p style="font-weight: normal; margin-bottom: 15px;" class="center">This shows your meals for a date range.<br> If you didn't change your meal, it will show what you have for your weekly meal. <br> Weekends are not included</p>
+
+<%= form_for @meal_list, url: meals_list_path(@meal_list), html: {method: :get} do |f| %>
+  <div class="center">
+    <%= f.label :start_date, "Start Date" %>
+    <%= f.text_field :start_date, value: @meal_list.start_date, autocomplete: "off", class: 'date' %>
+
+    <%= f.label :end_date, "End Date" %>
+    <%= f.text_field :end_date, value: @meal_list.end_date, autocomplete: "off", class: 'date' %>
+    <br><br>
+
+    <%= f.label :member_id, "Member ID:" %>
+    <%= f.text_field :member_id, value: @meal_list.member_id, size: 2, required: true %>
+    <br><br>
+
+    <%= f.submit "Submit" %>
+    <br><br>
+  </div>
+<% end %>
+
+<% meal_list = meal_count_for_member(@meal_list.start_date, @meal_list.end_date, @meal_list.member_id) %>
+
+<% if @meal_list.member_id.blank? %>
+  <div></div>
+<% elsif meal_list.blank? %>
+  <div class="center" style="display: contents;"><p>No Extra Meals</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td><b>Day</b></td>
+      <td><b>Date</b></td>
+      <td><b>Lunch</b></td>
+      <td><b>Dinner</b></td>
+    </tr>
+    <% meal_list.each do |date, meals| %>
+      <tr>
+        <td><%= date.strftime("%a") %></td>
+        <td><%= date.strftime("%m/%d/%Y") %></td>
+        <td class="center"><%= full_meal_name(meals["lunch"]) %></td>
+        <td class="center"><%= full_meal_name(meals["dinner"]) %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
