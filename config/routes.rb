@@ -25,5 +25,6 @@ Rails.application.routes.draw do
   post "/menu/new", to: "menu#create"
   get "/menu/edit", to: "menu#edit"
   patch "/menu/edit", to: "menu#update"
+  get "/menu/list", to: "menu#list"
 
 end

@@ -1,0 +1,28 @@
+<h1>Menu List</h1>
+
+<div class="center" style="display: contents;"><p style="margin-bottom: 15px;"><%= link_to "+ Add Menu Item", menu_new_path, class: "admin-link" %></p></div>
+
+<% if @items.blank? %>
+  <div class="center" style="display: contents;"><p>No Members</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td><b>Day</b></td>
+      <td><b>Date</b></td>
+      <td><b>Lunch</b></td>
+      <td><b>Dinner</b></td>
+      <td><b>Edit</b></td>
+      <td><b>Delete</b></td>
+    </tr>
+    <% @items.each do |item| %>
+      <tr>
+        <td><%= item.date.strftime("%a") %></td>
+        <td><%= item.date.strftime("%m/%d/%y") %></td>
+        <td><%= item.lunch %></td>
+        <td><%= item.dinner %></td>
+        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-pencil"), menu_edit_path(id: item.id), style: "color: blue" %></td>
+        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"),  menu_edit_path(id: item.id), style: "color: red", data: { confirm: "Are you sure you want to delete this menu item? (Not Implemented Yet)" } %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

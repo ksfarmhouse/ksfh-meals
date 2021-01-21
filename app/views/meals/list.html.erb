@@ -37,7 +37,7 @@
     <% meal_list.each do |date, meals| %>
       <tr>
         <td><%= date.strftime("%a") %></td>
-        <td><%= date.strftime("%m/%d/%Y") %></td>
+        <td><%= date.strftime("%m/%d/%y") %></td>
         <td class="center"><%= full_meal_name(meals["lunch"]) %></td>
         <td class="center"><%= full_meal_name(meals["dinner"]) %></td>
       </tr>

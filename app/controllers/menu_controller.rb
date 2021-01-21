@@ -5,6 +5,7 @@ class MenuController < ApplicationController
 
   def new
     @menu = Menu.new(date: Date.today)
+    params[:admin] = true
   end
 
   def create
@@ -24,6 +25,7 @@ class MenuController < ApplicationController
 
   def edit
     @menu = Menu.find(params[:id])
+    params[:admin] = true
   end
 
   def update
@@ -35,6 +37,11 @@ class MenuController < ApplicationController
         format.html {redirect_to menu_edit_path(id: @menu.id), alert: "Unable to Update Menu Item!"}
       end
     end
+  end
+
+  def list
+    @items = Menu.where("date >= :date", date: Date.today).order(:date)
+    params[:admin] = true
   end
 
   private

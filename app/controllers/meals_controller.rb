@@ -57,6 +57,10 @@ class MealsController < ApplicationController
     @cook = Cook.new(date: date || Date.today)
   end
 
+  def reset_meals
+    params[:admin] = true
+  end
+
   private
   def meal_params
     params.require(:meal).permit(:member_id, :date, :start_date, :end_date, :lunch, :lunch_qty, :dinner, :dinner_qty)
