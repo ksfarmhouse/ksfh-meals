@@ -3,7 +3,7 @@
 <%= form_for @weekly_meals, url: weekly_meals_path, html: { method: :post } do |f| %>
   <div class="center">
     <%= f.label :member_id, "Member ID:" %>
-    <%= f.text_field :member_id, size: 2, disabled: true %>
+    <%= f.text_field :member_id, size: 4, disabled: true %>
     <%= f.hidden_field :member_id, value: params[:weekly_meal][:member_id] %>
   </div>
   <br>

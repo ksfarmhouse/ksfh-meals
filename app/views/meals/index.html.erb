@@ -6,6 +6,7 @@
   <div class="center">
     <%= f.label :start_date, "Start Date" %>
     <%= f.text_field :start_date, value: @treasurer.start_date, autocomplete: "off", class: 'date' %>
+    <span class="show-for-small"><br></span>
 
     <%= f.label :end_date, "End Date" %>
     <%= f.text_field :end_date, value: @treasurer.end_date, autocomplete: "off", class: 'date' %>

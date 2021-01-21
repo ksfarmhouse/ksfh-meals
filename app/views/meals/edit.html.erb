@@ -2,7 +2,7 @@
 
 <%= form_for @meal, :url => {:action => "update"} do |f| %>
   <%= f.label :member_id, "Member ID:" %>
-  <%= f.text_field :member_id, size: 2, required: true %>
+  <%= f.text_field :member_id, size: 4, required: true %>
   <br><br>
 
   <%= f.label :date %>

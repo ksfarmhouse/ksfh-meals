@@ -6,13 +6,14 @@
   <div class="center">
     <%= f.label :start_date, "Start Date" %>
     <%= f.text_field :start_date, value: @meal_list.start_date, autocomplete: "off", class: 'date' %>
+    <span class="show-for-small"><br></span>
 
     <%= f.label :end_date, "End Date" %>
     <%= f.text_field :end_date, value: @meal_list.end_date, autocomplete: "off", class: 'date' %>
     <br><br>
 
     <%= f.label :member_id, "Member ID:" %>
-    <%= f.text_field :member_id, value: @meal_list.member_id, size: 2, required: true %>
+    <%= f.text_field :member_id, value: @meal_list.member_id, size: 4, required: true %>
     <br><br>
 
     <%= f.submit "Submit" %>
