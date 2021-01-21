@@ -1,1 +1,28 @@
-<p>Users Index</p>
+<h1>Members List</h1>
+
+<div class="center" style="display: contents;"><p style="margin-bottom: 15px;"><%= link_to "+ Add Member", new_members_path, class: "admin-link" %></p></div>
+
+<% if @members.blank? %>
+  <div class="center" style="display: contents;"><p>No Members</p></div>
+<% else %>
+  <table>
+    <tr>
+      <td>Member ID</td>
+      <td>First Name</td>
+      <td>Last Name</td>
+      <td>Status</td>
+      <td>Edit</td>
+      <td>Delete</td>
+    </tr>
+    <% @members.each do |member| %>
+      <tr>
+        <td><%= member.member_id %></td>
+        <td><%= member.first %></td>
+        <td><%= member.last %></td>
+        <td><%= full_status_name(member.status) %></td>
+        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-pencil"),  edit_members_path(id: member.id), style: "color: blue" %></td>
+        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"),  edit_members_path(id: member.id), style: "color: red", data: { confirm: "Are you sure you want to delete this member? (Not Implemented Yet)" } %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

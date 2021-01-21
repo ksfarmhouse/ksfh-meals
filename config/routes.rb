@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "meals#edit"
+  get "/techchair", to: "techchair#index"
 
-  resource :members
+  resource :members, except: [:show]
+  get "/members", to: "members#index"
 
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"

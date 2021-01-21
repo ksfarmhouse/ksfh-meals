@@ -1,9 +1,12 @@
 class MembersController < ApplicationController
   def index
+    @members = Member.all.order(:last)
+    params[:admin] = true
   end
 
   def new
-    @member = Member.new();
+    @member = Member.new
+    params[:admin] = true
   end
 
   def create
@@ -29,6 +32,7 @@ class MembersController < ApplicationController
 
   def edit
     @member = Member.find(params[:id])
+    params[:admin] = true
   end
 
   def update
@@ -40,10 +44,6 @@ class MembersController < ApplicationController
         format.html {redirect_to edit_members_path(id: @member.id), alert: "Unable to Update Member!"}
       end
     end
-  end
-
-  def show
-
   end
 
   def delete
