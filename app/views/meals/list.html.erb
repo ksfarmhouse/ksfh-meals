@@ -21,12 +21,12 @@
   </div>
 <% end %>
 
-<% meal_list = meal_count_for_member(@meal_list.start_date, @meal_list.end_date, @meal_list.member_id) %>
+<% meal_list = meal_count_for_member(@meal_list.start_date, @meal_list.end_date, @meal_list.member_id) unless @member.blank? %>
 
 <% if @meal_list.member_id.blank? %>
   <div></div>
-<% elsif meal_list.blank? %>
-  <div class="center" style="display: contents;"><p>No Extra Meals</p></div>
+<% elsif meal_list.blank? || @member.blank? %>
+  <div class="center" style="display: contents;"><p>No Meals</p></div>
 <% else %>
   <table>
     <tr>
