@@ -1,16 +1,16 @@
-<% meals = meal_count %>
 <h1>Meal Count</h1>
 
+<%= form_for @cook, url: cook_url(date: @cook.date), html: {method: :post} do |f| %>
+  <div class="center">
+    <%= f.label :date, "Date" %>
+    <%= f.text_field :date, value: @cook.date, autocomplete: "off", class: 'date' %>
+    
+    <%= f.submit "Change Date" %>
+    <br><br>
+  </div>
+<% end %>
 
-<%#= form_for @meal, url: cook_url(date: @meal.date), html: {method: :post} do |f| %>
-  <!-- <div class="center">
-    <%#= f.label :date, "Date" %>
-    <%#= f.text_field :date, value: Date.today.to_date.strftime("%Y-%m-%d"), autocomplete: "off", class: 'date' %>
-    <br><br>
-    <%#= f.submit "Change Date" %>
-    <br><br>
-  </div> -->
-<%# end %>
+<% meals = meal_count(@cook.date) %>
 
 <table>
   <tr>

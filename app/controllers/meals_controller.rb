@@ -53,7 +53,8 @@ class MealsController < ApplicationController
   end
 
   def cook
-    @meal = Meal.new
+    date = params[:cook] && params[:cook][:date]
+    @cook = Cook.new(date: date || Date.today)
   end
 
   private

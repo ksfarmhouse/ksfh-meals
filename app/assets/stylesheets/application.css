@@ -146,6 +146,26 @@ table h3 {
   display: none;
 }
 
+@media screen and (max-width: 639px){
+  .show-for-small {
+    display: inline;
+  }
+
+  .show-for-medium {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 640px){
+  .show-for-small {
+    display: none;
+  }
+
+  .show-for-medium {
+    display: inline;
+  }
+}
+
 /*@media only screen and (max-width: 1080px) {
   body {
     font-size: 30px;

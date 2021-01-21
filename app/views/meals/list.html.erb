@@ -1,6 +1,6 @@
 <h1> View Your Meals </h1>
 
-<p style="font-weight: normal; margin-bottom: 15px;" class="center">This shows your meals for a date range.<br> If you didn't change your meal, it will show what you have for your weekly meal. <br> Weekends are not included</p>
+<p style="font-weight: normal; margin-bottom: 15px;" class="center">This shows your meals for a date range.<br> If you didn't change your meal, it will show your weekly meal.</p>
 
 <%= form_for @meal_list, url: meals_list_path(@meal_list), html: {method: :get} do |f| %>
   <div class="center">

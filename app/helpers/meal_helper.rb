@@ -4,7 +4,7 @@ module MealHelper
     
     late_plates = late_plates.map do |member_id|
       Member.find_by(member_id: member_id)
-    end.uniq
+    end.uniq.sort_by{|m| m.last}
   end
 
   def dinner_late_plates
@@ -12,10 +12,11 @@ module MealHelper
 
     late_plates = late_plates.map do |member_id|
       Member.find_by(member_id: member_id)
-    end.uniq
+    end.uniq.sort_by{|m| m.last}
   end
 
-  def meal_count(date=Date.today)
+  def meal_count(date)
+    date = date.to_date
     meals = {}
     meals["LI"] = weekly_lunch_meals_by_member("LI", date).count
     meals["LE"] = weekly_lunch_meals_by_member("LE", date).count
@@ -46,10 +47,10 @@ module MealHelper
 
     # reject if there is a meal made for it
     meals.reject! do |member_id|
-      Meal.where(date: Date.today, member_id: member_id).present?
+      Meal.where(date: date, member_id: member_id).present?
     end
 
-    meals << Meal.where(date: Date.today, lunch: meal).pluck(:member_id)
+    meals << Meal.where(date: date, lunch: meal).pluck(:member_id)
     meals.flatten!.reject(&:blank?)
   end
 
@@ -71,10 +72,10 @@ module MealHelper
     end
     # reject if there is a meal made for it
     meals.reject! do |member_id|
-      Meal.where(date: Date.today, member_id: member_id).present?
+      Meal.where(date: date, member_id: member_id).present?
     end
 
-    meals << Meal.where(date: Date.today, dinner: meal).pluck(:member_id)
+    meals << Meal.where(date: date, dinner: meal).pluck(:member_id)
     meals.flatten!.reject(&:blank?)
   end
 
