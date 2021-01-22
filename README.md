@@ -1,5 +1,5 @@
 # ksfh-meals
-Basic website for FarmHouse members at Kansas State University to request late plates and to sign in or out for meals.<br>
+Basic website for FarmHouse members to request late plates and to sign in or out for meals.<br>
 This is the new Ruby Version of the website.
 
 ## Specs:
@@ -27,3 +27,7 @@ Allows members to see the status of their meals for a specific date range.
 
 ### Menu
 Displays the menu for each day for a week
+
+### Admin Pages
+There are also Admin Pages to allow maintenance of the data.<br>
+These include Members, Menu, and Reset Meals
