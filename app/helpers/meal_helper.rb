@@ -22,11 +22,13 @@ module MealHelper
     meals["LGuest"] = lunch_guest_meals(date)
     meals["LE"] = weekly_lunch_meals_by_member("LE", date).count
     meals["LL"] = weekly_lunch_meals_by_member("LL", date).count
+    meals["LTotal"] = meals["LI"] + meals["LGuest"] + meals["LE"] + meals["LL"]
 
     meals["DI"] = weekly_dinner_meals_by_member("DI", date).count
     meals["DGuest"] = dinner_guest_meals(date)
     meals["DE"] = weekly_dinner_meals_by_member("DE", date).count
     meals["DL"] = weekly_dinner_meals_by_member("DL", date).count
+    meals["DTotal"] = meals["DI"] + meals["DGuest"] + meals["DE"] + meals["DL"]
     meals
   end
 
@@ -94,7 +96,7 @@ module MealHelper
     meals = Meal.where(date: date).where("dinner_qty > 1")
     count = 0;
     meals.each do |meal|
-      count += meal.lunch_qty - 1
+      count += meal.dinner_qty - 1
     end
     count
   end
