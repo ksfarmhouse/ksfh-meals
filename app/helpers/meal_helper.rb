@@ -19,10 +19,12 @@ module MealHelper
     date = date.to_date
     meals = {}
     meals["LI"] = weekly_lunch_meals_by_member("LI", date).count
+    meals["LGuest"] = lunch_guest_meals(date)
     meals["LE"] = weekly_lunch_meals_by_member("LE", date).count
     meals["LL"] = weekly_lunch_meals_by_member("LL", date).count
 
     meals["DI"] = weekly_dinner_meals_by_member("DI", date).count
+    meals["DGuest"] = dinner_guest_meals(date)
     meals["DE"] = weekly_dinner_meals_by_member("DE", date).count
     meals["DL"] = weekly_dinner_meals_by_member("DL", date).count
     meals
@@ -77,6 +79,24 @@ module MealHelper
 
     meals << Meal.where(date: date, dinner: meal).pluck(:member_id)
     meals.flatten!.reject(&:blank?)
+  end
+
+  def lunch_guest_meals(date)
+    meals = Meal.where(date: date).where("lunch_qty > 1")
+    count = 0;
+    meals.each do |meal|
+      count += meal.lunch_qty - 1
+    end
+    count
+  end
+
+  def dinner_guest_meals(date)
+    meals = Meal.where(date: date).where("dinner_qty > 1")
+    count = 0;
+    meals.each do |meal|
+      count += meal.lunch_qty - 1
+    end
+    count
   end
 
   def meal_count_by_member(start_date, end_date)

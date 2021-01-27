@@ -3,7 +3,7 @@ class MealsController < ApplicationController
     start_date = params[:treasurer] && params[:treasurer][:start_date]
     end_date = params[:treasurer] && params[:treasurer][:end_date]
     @treasurer = Treasurer.new(
-      start_date: start_date || Date.today - 1.month,
+      start_date: start_date || start_of_semester,
       end_date: end_date || Date.today
     )
   end
@@ -84,5 +84,13 @@ class MealsController < ApplicationController
   private
   def meal_params
     params.require(:meal).permit(:member_id, :date, :start_date, :end_date, :lunch, :lunch_qty, :dinner, :dinner_qty)
+  end
+
+  def start_of_semester
+    if Date.today.month >= 8 #August or later
+      Date.new(Date.today.year, 8, 1)
+    else
+      Date.new(Date.today.year, 1, 1)
+    end 
   end
 end

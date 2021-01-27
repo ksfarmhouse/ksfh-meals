@@ -16,6 +16,7 @@
   <tr>
     <td></td>
     <td><b>In</b></td>
+    <td><b>Guests</b></td>
     <td><b>Early</b></td>
     <td><b>Late</b></td>
     <td><b>Total</b></td>
@@ -23,6 +24,7 @@
   <tr>
     <td><b>Lunch</b></td>
     <td class="center"><%= meals["LI"] %></td>
+    <td class="center"><%= meals["LGuest"] %></td>
     <td class="center"><%= meals["LE"] %></td>
     <td class="center"><%= meals["LL"] %></td>
     <td class="center"><%= meals["LI"] + meals["LE"] + meals["LL"] %></td>
@@ -30,6 +32,7 @@
   <tr>
     <td><b>Dinner</b></td>
     <td class="center"><%= meals["DI"] %></td>
+    <td class="center"><%= meals["DGuest"] %></td>
     <td class="center"><%= meals["DE"] %></td>
     <td class="center"><%= meals["DL"] %></td>
     <td class="center"><%= meals["DI"] + meals["DE"] + meals["DL"] %></td>

@@ -11,13 +11,13 @@
 
   <%= f.label :lunch %>
   <%= f.select :lunch, options_for_select(Meal::LUNCH_TYPES) %>
-  <%= f.label :lunch_qty %>
+  <%= f.label :lunch_qty, "Quantity" %>
   <%= f.number_field :lunch_qty, value: 1 %>
   <br><br>
 
   <%= f.label :dinner %>
   <%= f.select :dinner, options_for_select(Meal::DINNER_TYPES) %>
-  <%= f.label :dinner_qty %>
+  <%= f.label :dinner_qty, "Quantity" %>
   <%= f.number_field :dinner_qty, value: 1 %>
   <br><br>
 
