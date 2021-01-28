@@ -1,9 +1,18 @@
 <h1>Admin Pages</h1>
 
-<%= link_to "Members", members_path, class: "admin-link" %>This page has the complete list of member in the database. This is the place to Add, Edit or Delete Members
+<%= link_to "Members", members_path, class: "admin-link" %>
+This page has the complete list of member in the database. This is the place to Add, Edit or Delete Members
 <br><br>
 
-<%= link_to "Menu", menu_list_path, class: "admin-link" %>This page has the menu items for future dates. This is the place to Add, Edit or Delete Menu Items
+<%= link_to "Menu", menu_list_path, class: "admin-link" %>
+This page has the menu items for future dates. This is the place to Add, Edit or Delete Menu Items
 <br><br>
 
-<%= link_to "Reset Meals", reset_meals_path, class: "admin-link" %>This page has a button to reset the meals for all members. This will make the weekly meals so that In House meals are In, and Out of House and Alumni meals are Out.
+<%= link_to "Reset Meals", reset_meals_path, class: "admin-link" %>
+This page has a button to reset the meals for all members. This will make the weekly meals so that In House meals are In, and Out of House and Alumni meals are Out.
+
+<h4 style="margin-bottom: 0;"><u>Weekly Meal Transfer</u></h4>
+Every day the Weekly Meals will be transfered to the Meal table only for Out of House and Alumni if they are signed in for lunch or dinner. <br>File: lib/tasks/transfer_weekly_meals.rake
+
+<h4 style="margin-bottom: 0;"><u>Data Clean Up</u></h4>
+Because we have limited storage, every day the past Menu Items will be deleted. Also on January 1 and August 1 every year the Meal table data will be deleted (just data for the Treasurer page) and reset the meals. <br>File: lib/tasks/delete_old_data.rake
