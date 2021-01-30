@@ -60,7 +60,7 @@ module MealHelper
 
   def weekly_dinner_meals_by_member(meal, date=Date.today)
     meals =
-    case wday = Date.today().wday()
+    case wday = date.wday()
       when 1 #Monday
         WeeklyMeal.where(mon_dinner: meal).pluck(:member_id)
       when 2 #Tueday
@@ -149,8 +149,10 @@ module MealHelper
         if start_date.on_weekday?
           meals[start_date] = {}
           meals[start_date]["lunch"] = "L?"
+          meals[start_date]["lunch_qty"] = "1"
           meals[start_date]["dinner"] = "D?"
-          meal = Meal.where(date: start_date)
+          meals[start_date]["dinner_qty"] = "1"
+          meal = Meal.where(date: start_date, member_id: member_id)
           if meal.blank?
             case start_date.wday
             when 1 #Monday
@@ -172,7 +174,16 @@ module MealHelper
           else
             meal = meal.first!
             meals[start_date]["lunch"] = meal.lunch
+            meals[start_date]["lunch_qty"] = meal.lunch_qty
             meals[start_date]["dinner"] = meal.dinner
+            meals[start_date]["dinner_qty"] = meal.dinner_qty
+          end
+
+          if meals[start_date]["lunch"] == "LO"
+            meals[start_date]["lunch_qty"] = "0"
+          end
+          if meals[start_date]["dinner"] == "DO"
+            meals[start_date]["dinner_qty"] = "0"
           end
         end
         start_date = start_date + 1.day

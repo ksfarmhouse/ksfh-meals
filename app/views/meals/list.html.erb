@@ -33,14 +33,18 @@
       <td><b>Day</b></td>
       <td><b>Date</b></td>
       <td><b>Lunch</b></td>
+      <td><b>Qty</b></td>
       <td><b>Dinner</b></td>
+      <td><b>Qty</b></td>
     </tr>
     <% meal_list.each do |date, meals| %>
       <tr>
         <td><%= date.strftime("%a") %></td>
         <td><%= date.strftime("%m/%d/%y") %></td>
         <td class="center"><%= full_meal_name(meals["lunch"]) %></td>
+        <td class="center"><%= meals["lunch_qty"] %></td>
         <td class="center"><%= full_meal_name(meals["dinner"]) %></td>
+        <td class="center"><%= meals["dinner_qty"] %></td>
       </tr>
     <% end %>
   </table>
