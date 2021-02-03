@@ -32,6 +32,18 @@ module MealHelper
     meals
   end
 
+  def crew_meals (in_count, guest_count, crew_count)
+    if in_count + guest_count - crew_count > 0
+      in_count + guest_count - crew_count
+    else
+      0
+    end
+  end
+
+  def crew_tables (count)
+    (count/8.to_f).ceil
+  end
+
   def weekly_lunch_meals_by_member(meal, date=Date.today)
     meals =
     case date.wday()

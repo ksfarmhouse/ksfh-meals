@@ -12,6 +12,7 @@
 
 <% meals = meal_count(@cook.date) %>
 
+<h1 style="margin-top: 0;">Cook</h1>
 <table>
   <tr>
     <td></td>
@@ -38,3 +39,28 @@
     <td class="center"><%= meals["DTotal"] %></td>
   </tr>
 </table>
+
+<h1>Crew</h1><br>
+<table class="center">
+  <tr>
+    <td></td>
+    <td><b>Set For*</b></td>
+    <td><b>Tables**</b></td>
+  </tr>
+  <tr>
+    <td><b>Lunch</b></td>
+    <% lunch_meals = crew_meals(meals["LI"], meals["LGuest"], 2) %>
+    <td class="center"><%= lunch_meals %></td>
+    <td class="center"><%= crew_tables(lunch_meals) %></td>
+  </tr>
+  <tr>
+    <td><b>Dinner</b></td>
+    <% dinner_meals = crew_meals(meals["DI"], meals["DGuest"], 6) %>
+    <td class="center"><%= dinner_meals %></td>
+    <td class="center"><%= crew_tables(dinner_meals) %></td>
+  </tr>
+</table>
+<p class="center" style="margin-top: 20px;">*Set For is In + Guests - Crew<br>
+Crew: 2 for lunch 6 for dinner<br>
+**Table number is 8</p>
+
