@@ -1,0 +1,2 @@
+class CrewNumber < ApplicationRecord
+end

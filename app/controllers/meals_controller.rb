@@ -56,6 +56,7 @@ class MealsController < ApplicationController
   def cook
     date = params[:cook] && params[:cook][:date]
     @cook = Cook.new(date: date || Date.today)
+    @crew_numbers = CrewNumber.all.first!
   end
 
   def reset_meals

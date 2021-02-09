@@ -1,0 +1,17 @@
+<h1>Edit Crew Numbers</h1>
+
+<%= form_for @crew_numbers, url: crew_numbers_edit_path do |f| %>
+  <%= f.label :lunch_crew_num, "Number on Lunch Crew: " %>
+  <%= f.number_field :lunch_crew_num, value: @crew_numbers.lunch_crew_num, min: 0, class: "crew_numbers" %>
+  <br><br>
+
+  <%= f.label :dinner_crew_num, "Number on Dinner Crew: " %>
+  <%= f.number_field :dinner_crew_num, value: @crew_numbers.dinner_crew_num, min: 0, class: "crew_numbers" %>
+  <br><br>
+
+  <%= f.label :table_capacity, "Table Capacity: " %>
+  <%= f.number_field :table_capacity, value: @crew_numbers.table_capacity, min: 1, class: "crew_numbers" %>
+  <br><br>
+
+  <%= f.submit "Update Crew Numbers" %>
+<% end %>

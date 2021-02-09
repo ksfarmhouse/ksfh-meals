@@ -30,4 +30,6 @@ Rails.application.routes.draw do
   get "/menu/list", to: "menu#list"
   get "/menu/delete", to: "menu#delete"
 
+  get "/crew_numbers/edit", to: "crew_numbers#edit"
+  patch "/crew_numbers/edit", to: "crew_numbers#update"
 end

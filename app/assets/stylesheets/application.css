@@ -87,7 +87,7 @@ table h3 {
 }
 
 .box input[type=number] {
-  width: 25px;
+  width: 30px;
 }
 
 .box input[type=submit] {
@@ -171,43 +171,6 @@ a.admin-link {
     display: inline;
   }
 }
-
-/*@media only screen and (max-width: 1080px) {
-  body {
-    font-size: 30px;
-  }
-
-  h1 {
-    font-size: 65px;
-  }
-
-  h3 {
-    font-size: 45px;
-  }
-
-  p {
-    font-size: 30px;
-  }
-
-  input, select {
-    font-size: 30px;
-    height: 60px;
-  }
-  
-  .box {
-    max-width: 1080px;
-    width: 90%;
-  }
-  
-  .box input[type=number] {
-    text-align: center;
-    width: 35px;
-  }
-  
-  .box input[type=date] {
-    width: 250px;
-  }
-}*/
 
 #page-container {
   position: relative;

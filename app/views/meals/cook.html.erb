@@ -46,21 +46,24 @@
     <td></td>
     <td><b>Set For</b></td>
     <td><b>Tables</b></td>
+    <td><b>Empty Seats</b></td>
   </tr>
   <tr>
     <td><b>Lunch</b></td>
-    <% lunch_meals = crew_meals(meals["LI"], meals["LGuest"], 2) %>
+    <% lunch_meals = crew_meals(meals["LI"], meals["LGuest"], @crew_numbers.lunch_crew_num) %>
     <td class="center"><%= lunch_meals %></td>
     <td class="center"><%= crew_tables(lunch_meals) %></td>
+    <td class="center"><%= crew_tables_remainder(lunch_meals) %></td>
   </tr>
   <tr>
     <td><b>Dinner</b></td>
-    <% dinner_meals = crew_meals(meals["DI"], meals["DGuest"], 6) %>
+    <% dinner_meals = crew_meals(meals["DI"], meals["DGuest"], @crew_numbers.dinner_crew_num) %>
     <td class="center"><%= dinner_meals %></td>
     <td class="center"><%= crew_tables(dinner_meals) %></td>
+    <td class="center"><%= crew_tables_remainder(dinner_meals) %></td>
   </tr>
 </table>
 <p class="center" style="margin-top: 20px;">Set For is In + Guests - Crew<br>
-Crew: 2 for Lunch, 6 for Dinner<br>
-Table Capacity is 8</p>
+Crew: <%= @crew_numbers.lunch_crew_num %> for Lunch, <%= @crew_numbers.dinner_crew_num %> for Dinner<br>
+Table Capacity is <%= @crew_numbers.table_capacity %></p>
 
