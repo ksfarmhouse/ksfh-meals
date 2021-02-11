@@ -46,7 +46,7 @@
     <td></td>
     <td><b>Set For</b></td>
     <td><b>Tables</b></td>
-    <td><b>Empty Seats</b></td>
+    <td><b>Extra Seats</b></td>
   </tr>
   <tr>
     <td><b>Lunch</b></td>
@@ -63,7 +63,9 @@
     <td class="center"><%= crew_tables_remainder(dinner_meals) %></td>
   </tr>
 </table>
-<p class="center" style="margin-top: 20px;">Set For is In + Guests - Crew<br>
-Crew: <%= @crew_numbers.lunch_crew_num %> for Lunch, <%= @crew_numbers.dinner_crew_num %> for Dinner<br>
-Table Capacity is <%= @crew_numbers.table_capacity %></p>
+<p class="center" style="margin-top: 20px;">
+  Set For: In + Guests - Crew<br>
+  Crew: <%= @crew_numbers.lunch_crew_num %> for Lunch, <%= @crew_numbers.dinner_crew_num %> for Dinner<br>
+  Table Capacity: <%= @crew_numbers.table_capacity %>
+</p>
 
