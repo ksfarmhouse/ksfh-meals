@@ -9,7 +9,7 @@ class Member < ApplicationRecord
   MEMBER_STATUSES =
   [["In House", "I"],
    ["Out of House", "O"],
-   ["Alumni", "A"]]
+   ["Alumnus", "A"]]
 
   def in_house?
     status == "I"
@@ -19,7 +19,7 @@ class Member < ApplicationRecord
     status == "O"
   end
 
-  def alumni?
+  def alumnus?
     status == "A"
   end
 

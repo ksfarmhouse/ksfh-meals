@@ -6,7 +6,7 @@ module ApplicationHelper
     when "O"
       "Out of House"
     when "A"
-      "Alumni"
+      "Alumnus"
     end
   end
 end  

@@ -45,7 +45,7 @@ module MealHelper
   end
 
   def crew_tables_remainder (count)
-    @crew_numbers.table_capacity - (count % @crew_numbers.table_capacity)
+    (@crew_numbers.table_capacity - (count % @crew_numbers.table_capacity)) % @crew_numbers.table_capacity
   end
 
   def weekly_lunch_meals_by_member(meal, date=Date.today)
