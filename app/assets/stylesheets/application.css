@@ -128,11 +128,11 @@ table h3 {
   text-decoration: none;
 }
 
-.navigation a:hover, a.admin-link:hover {
+.navigation a:hover, .admin-link:hover {
   color: #ffce00;
 }
 
-a.admin-link {
+.admin-link {
   color: #006938;
   font-weight: bold;
   text-decoration: underline;

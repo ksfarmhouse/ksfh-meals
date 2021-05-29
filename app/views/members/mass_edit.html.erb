@@ -1,0 +1,29 @@
+<h1>Mass Edit Members</h1>
+<br><br>
+
+<% if @members.blank? %>
+  <div class="center" style="display: contents;"><p>No Members</p></div>
+<% else %>
+  <%= form_for :member, url: members_mass_edit_path, html: { method: :post } do |f| %>
+    <div class="center"><%= submit_tag "Save Edits", style: "margin: auto;" %></div>
+    <br>
+    <table>
+      <tr>
+        <td><b>Member ID</b></td>
+        <td><b>First Name</b></td>
+        <td><b>Last Name</b></td>
+        <td><b>Status</b></td>
+      </tr>
+      <% @members.each do |member| %>
+        <tr>
+          <td><%= member.member_id %></td>
+          <td><%= f.text_field :first, value: member.first, name: "member[#{member.member_id}][first]", size: 10, required: true %></td>
+          <td><%= f.text_field :last, value: member.last, name: "member[#{member.member_id}][last]", size: 10, required: true %></td>
+          <td><%= f.select :status, options_for_select(Member::MEMBER_STATUSES, member.status), {}, {name:"member[#{member.member_id}][status]"} %></td>
+        </tr>
+      <% end %>
+    </table>
+    <br>
+    <div class="center"><%= submit_tag "Save Edits", style: "margin: auto;" %></div>
+  <% end %>
+<% end %>

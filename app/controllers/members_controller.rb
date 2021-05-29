@@ -62,6 +62,30 @@ class MembersController < ApplicationController
     end
   end
 
+  def mass_edit
+    @members = Member.all.order(:last).to_a
+    params[:admin] = true
+  end
+
+  def mass_edit_update
+    succeed = true
+
+    params[:member].each do |member|
+      m = Member.find_by(member_id: member[0])
+      if !m.update(member[1].permit(:first, :last, :status))
+        succeed = false
+      end
+    end
+
+    respond_to do |format|
+      if succeed
+        format.html {redirect_to members_mass_edit_path, notice: "Members Updated!"}
+      else
+        format.html {redirect_to members_mass_edit_path, alert: "Unable to Update Members!"}
+      end
+    end
+  end
+
   def delete
     @member = Member.find(params[:id])
     respond_to do |format|

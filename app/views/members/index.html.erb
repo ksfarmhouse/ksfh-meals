@@ -1,6 +1,6 @@
 <h1>Members List</h1>
 
-<div class="center" style="display: contents;"><p style="margin-bottom: 15px;"><%= link_to "+ Add Member", new_members_path, class: "admin-link" %></p></div>
+<div class="center" style="display: contents;"><p style="margin-bottom: 15px;"><%= link_to "+ Add Member", new_members_path, class: "admin-link" %> | <%= link_to content_tag(:i, " Mass Edit Members", class: "fa fa-pencil admin-link"), members_mass_edit_path %></p></div>
 
 <% if @members.blank? %>
   <div class="center" style="display: contents;"><p>No Members</p></div>

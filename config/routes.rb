@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   resource :members, except: [:show]
   get "/members", to: "members#index"
   get "/members/delete", to: "members#delete"
+  get "/members/mass_edit", to: "members#mass_edit"
+  post "/members/mass_edit", to: "members#mass_edit_update"
 
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"
