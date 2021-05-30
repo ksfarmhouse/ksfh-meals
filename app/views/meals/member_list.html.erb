@@ -1,11 +1,13 @@
 <h1> Members by Meal Type </h1>
 
-<p style="font-weight: normal; margin-bottom: 15px;" class="center">This shows the members for a specific day and meal type.</p>
+<p style="font-weight: normal; margin-bottom: 15px;" class="center">This shows the members for a specific day and meal type</p>
 
 <%= form_for @meal_member_list, url: meals_member_list_path(@meal_member_list), html: {method: :get} do |f| %>
   <div class="center">
     <%= f.label :date, "Date" %>
     <%= f.text_field :date, value: @meal_member_list.date, autocomplete: "off", class: 'date' %>
+
+    <span class="show-for-small"><br></span>
 
     <%= f.label :meal_type, "Meal Type" %>
     <%= f.select :meal_type, options_for_select(Meal::MEAL_TYPES, @meal_member_list.meal_type) %>
@@ -22,7 +24,7 @@
   <div class="center" style="display: contents;"><p>No Members</p></div>
 <% else %>
   <% meal_type = @meal_member_list.meal_type %>
-  <p class="center">Number of Members: <%= meal_list.length %></p>
+  <p class="center">Total Members: <%= meal_list.length %></p>
   <table>
     <tr>
       <td><b>Name</b></td>
@@ -30,18 +32,26 @@
         <td><b>Qty*</b></td>
       <% end %>
     </tr>
+    <% guest_total = 0 %>
     <% meal_list.each do |member| %>
       <tr>
         <td class="center"><%= member.full_name %></td>
         <% if meal_type[1] == "G" %>
           <% meal = Meal.find_by(date: @meal_member_list.date, member_id: member.member_id) %>
           <% if meal_type == "LG" %>
+            <% guest_total += meal.lunch_qty - 1 %>
             <td class="center"><%= meal.lunch_qty - 1 %></td>
           <% else %>
+            <% guest_total += meal.dinner_qty - 1 %>
             <td class="center"><%= meal.dinner_qty - 1 %></td>
           <% end %>
-          
         <% end %>
+      </tr>
+    <% end %>
+    <% if meal_type[1] == "G" %>
+      <tr>
+        <td class="center"><b>Total Guests</b></td>
+        <td class="center"><b><%= guest_total %></b></td>
       </tr>
     <% end %>
   </table>
