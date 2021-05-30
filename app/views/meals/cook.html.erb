@@ -1,5 +1,7 @@
 <h1>Meal Count</h1>
 
+<p class="center" style="margin-bottom: 20px;"><%= link_to "Link to Members by Meal Type Page", meals_member_list_path(date: @cook.date, meal_type: "LI"), class: "admin-link" %></p>
+
 <%= form_for @cook, url: cook_url(date: @cook.date), html: {method: :post} do |f| %>
   <div class="center">
     <%= f.label :date, "Date" %>
@@ -24,18 +26,18 @@
   </tr>
   <tr>
     <td><b>Lunch</b></td>
-    <td class="center"><%= meals["LI"] %></td>
-    <td class="center"><%= meals["LGuest"] %></td>
-    <td class="center"><%= meals["LE"] %></td>
-    <td class="center"><%= meals["LL"] %></td>
+    <td class="center"><%= link_to meals["LI"], meals_member_list_path(date: @cook.date, meal_type: "LI"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["LGuest"], meals_member_list_path(date: @cook.date, meal_type: "LG"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["LE"], meals_member_list_path(date: @cook.date, meal_type: "LE"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["LL"], meals_member_list_path(date: @cook.date, meal_type: "LL"), class: "cook-link" %></td>
     <td class="center"><%= meals["LTotal"] %></td>
   </tr>
   <tr>
     <td><b>Dinner</b></td>
-    <td class="center"><%= meals["DI"] %></td>
-    <td class="center"><%= meals["DGuest"] %></td>
-    <td class="center"><%= meals["DE"] %></td>
-    <td class="center"><%= meals["DL"] %></td>
+    <td class="center"><%= link_to meals["DI"], meals_member_list_path(date: @cook.date, meal_type: "DI"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["DGuest"], meals_member_list_path(date: @cook.date, meal_type: "DG"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["DE"], meals_member_list_path(date: @cook.date, meal_type: "DE"), class: "cook-link" %></td>
+    <td class="center"><%= link_to meals["DL"], meals_member_list_path(date: @cook.date, meal_type: "DL"), class: "cook-link" %></td>
     <td class="center"><%= meals["DTotal"] %></td>
   </tr>
 </table>

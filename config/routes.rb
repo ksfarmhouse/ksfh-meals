@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   get "/meals", to: "meals#index"
   get "/meals/list", to: "meals#list"
   post "/meals/list", to: "meals#list"
+  get "/meals/member_list", to: "meals#member_list"
+  post "/meals/member_list", to: "meals#member_list"
   get "cook", to: "meals#cook"
   post "cook", to: "meals#cook"
   get "late_plates", to: "meals#late_plates"

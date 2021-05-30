@@ -138,6 +138,16 @@ table h3 {
   text-decoration: underline;
 }
 
+.cook-link:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+.cook-link {
+  color: black;
+  text-decoration: underline;
+}
+
 .message {
   background-color: #ffce00;
   color: #54575a;

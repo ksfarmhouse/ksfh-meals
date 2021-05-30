@@ -50,6 +50,15 @@ class MealsController < ApplicationController
     )
   end
 
+  def member_list
+    date = params[:date] || params[:meal_member_list] && params[:meal_member_list][:date]
+    meal_type = params[:meal_type] || params[:meal_member_list] && params[:meal_member_list][:meal_type]
+    @meal_member_list = MealMemberList.new(
+      date: date || Date.today,
+      meal_type: meal_type || "LI"
+    )
+  end
+
   def late_plates
   end
 

@@ -208,6 +208,29 @@ module MealHelper
     end
   end
 
+  def members_for_meal_type(date, meal_type)
+    date = date.to_date
+    member_ids =
+    if meal_type[1] != "G" #Guest
+      if meal_type[0] == "L" #Lunch
+        weekly_lunch_meals_by_member(meal_type, date)
+      else
+        weekly_dinner_meals_by_member(meal_type, date)
+      end
+    else
+      if meal_type[0] == "L" #Lunch
+        Meal.where(date: date).where("lunch_qty > 1").pluck(:member_id)
+      else
+        Meal.where(date: date).where("dinner_qty > 1").pluck(:member_id)
+      end
+    end
+
+    members = member_ids.map do |member_id|
+      Member.find_by(member_id: member_id)
+    end
+    members.sort_by{|m| m.last}
+  end
+
   def full_meal_name(code)
     case code[1]
     when "I"
