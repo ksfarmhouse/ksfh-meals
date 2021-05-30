@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "/members/delete", to: "members#delete"
   get "/members/mass_edit", to: "members#mass_edit"
   post "/members/mass_edit", to: "members#mass_edit_update"
+  get "activate_new_members", to: "members#activate_new_members"
 
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"

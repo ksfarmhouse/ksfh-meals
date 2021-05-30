@@ -9,11 +9,11 @@ task :delete_old_data => :environment do
     Meal.all.destroy_all
 
     #reset meals
-    Member.where(status: "I").map do |member|
+    Member.where(status: "I").or(Member.where(status: "N")).map do |member|
       weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.in_meals)
     end
 
-    Member.where.not(status: "I").map do |member|
+    Member.where(status: "O").or(Member.where(status: "A")).map do |member|
       weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.out_meals)
     end
   end

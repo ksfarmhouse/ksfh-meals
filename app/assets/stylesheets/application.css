@@ -134,7 +134,7 @@ table h3 {
 
 .admin-link {
   color: #006938;
-  font-weight: bold;
+  font-weight: bold !important;
   text-decoration: underline;
 }
 

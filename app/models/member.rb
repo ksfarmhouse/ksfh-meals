@@ -7,20 +7,13 @@ class Member < ApplicationRecord
   attr_accessor :update_weekly_meals
 
   MEMBER_STATUSES =
-  [["In House", "I"],
+  [["New Member", "N"],
+   ["In House", "I"],
    ["Out of House", "O"],
    ["Alumnus", "A"]]
 
   def in_house?
-    status == "I"
-  end
-
-  def out_of_house?
-    status == "O"
-  end
-
-  def alumnus?
-    status == "A"
+    status == "I" || status == "N"
   end
 
   def full_name

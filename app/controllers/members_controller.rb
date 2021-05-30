@@ -42,19 +42,19 @@ class MembersController < ApplicationController
         if params[:member][:update_weekly_meals] == "1"
           if @member.in_house?
             if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.in_meals)
-              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member and Weekly Meals Updated!"}
+              format.html {redirect_to members_path, notice: "Member and Weekly Meals Updated!"}
             else
               format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
             end
           else
             if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.out_meals)
-              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member and Weekly Meals Updated!"}
+              format.html {redirect_to members_path, notice: "Member and Weekly Meals Updated!"}
             else
               format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
             end
           end
         else
-          format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated!"}
+          format.html {redirect_to members_path, notice: "Member Updated!"}
         end
       else
         format.html {redirect_to edit_members_path(id: @member.id), alert: "Unable to Update Member!"}
@@ -79,11 +79,22 @@ class MembersController < ApplicationController
 
     respond_to do |format|
       if succeed
-        format.html {redirect_to members_mass_edit_path, notice: "Members Updated!"}
+        format.html {redirect_to members_path, notice: "Members Updated!"}
       else
-        format.html {redirect_to members_mass_edit_path, alert: "Unable to Update Members!"}
+        format.html {redirect_to members_path, alert: "Unable to Update Members!"}
       end
     end
+  end
+
+  def activate_new_members
+    respond_to do |format|
+      if Member.where(status: "N").update_all(status: "I")
+        format.html {redirect_to members_path, notice: "Members Updated!"}
+      else
+        format.html {redirect_to members_path, alert: "Unable to Update Members!"}
+      end
+    end
+    
   end
 
   def delete

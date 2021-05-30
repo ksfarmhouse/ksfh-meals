@@ -74,11 +74,11 @@ class MealsController < ApplicationController
   end
 
   def reset_meals_post
-    ih_status = Member.where(status: "I").map do |member|
+    ih_status = Member.where(status: "I").or(Member.where(status: "N")).map do |member|
       weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.in_meals)
     end
 
-    ooh_status = Member.where.not(status: "I").map do |member|
+    ooh_status = Member.where(status: "O").or(Member.where(status: "A")).map do |member|
       weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.out_meals)
     end
 

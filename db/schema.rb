@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_09_223735) do
+ActiveRecord::Schema.define(version: 2021_05_30_200625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2021_02_09_223735) do
     t.integer "member_id", null: false
     t.string "first", null: false
     t.string "last", null: false
-    t.string "status", limit: 1, default: "I", null: false
+    t.string "status", limit: 1, default: "N", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["member_id"], name: "index_members_on_member_id", unique: true

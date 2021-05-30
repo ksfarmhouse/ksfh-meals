@@ -1,14 +1,31 @@
 <h1>Members List</h1>
+<% new_member_count = @members.where(status: "N").count %>
 
-<div class="center" style="display: contents;"><p style="margin-bottom: 15px;"><%= link_to "+ Add Member", new_members_path, class: "admin-link" %> | <%= link_to content_tag(:i, " Mass Edit Members", class: "fa fa-pencil admin-link"), members_mass_edit_path %></p></div>
+<div class="center" style="display: contents;">
+  <p style="margin-bottom: 15px;">
+    <%= link_to "+ Add Member", new_members_path, class: "admin-link" %> | 
+    <%= link_to content_tag(:i, " Mass Edit Members", class: "fa fa-pencil admin-link"), members_mass_edit_path %>
+  </p>
+
+  <% if new_member_count > 0 %>
+    <p style="margin-bottom: 15px;"> 
+      <%= link_to content_tag(:i, " Activate New Members", class: "fa fa-user admin-link"), activate_new_members_path, class: "admin-link" %>
+    </p>
+  <% end %>
+</div>
 
 <% if @members.blank? %>
   <div class="center" style="display: contents;"><p>No Members</p></div>
 <% else %>
   <p class="center" style="font-weight: normal;">
+    <% if new_member_count > 0 %>
+      <%= new_member_count %> New Members |
+    <% end %>
     <%= @members.where(status: "I").count %> In House |
     <%= @members.where(status: "O").count %> Out of House |
     <%= @members.where(status: "A").count %> Alumni
+    <br>
+    <b><%= @members.count %> Total Members</b>
   </p>
 
   <table>
