@@ -4,6 +4,11 @@ task :delete_old_data => :environment do
 
   Menu.where("date < ?", today).destroy_all
 
+  # if January 1 have the new members activated
+  if (today.month == 1 && today.day == 1)
+    Member.where(status: "N").update_all(status: "I")
+  end
+
   # if January 1 or August 1
   if (today.month == 1 && today.day == 1) || (today.month == 8 && today.day == 1)
     Meal.all.destroy_all
