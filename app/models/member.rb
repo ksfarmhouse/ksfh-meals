@@ -19,4 +19,14 @@ class Member < ApplicationRecord
   def full_name
     "#{first} #{last}"
   end
+
+  def self.to_csv
+    CSV.generate(headers: true) do |csv|
+      csv << %w{Member}
+
+      all.each do |member|
+        csv << [member.full_name]
+      end
+    end
+  end
 end

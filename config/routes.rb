@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resource :members, except: [:show]
   get "/members", to: "members#index"
+  get "/members_csv", to: "members#csv_export"
   get "/members/delete", to: "members#delete"
   get "/members/mass_edit", to: "members#mass_edit"
   post "/members/mass_edit", to: "members#mass_edit_update"

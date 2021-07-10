@@ -9,7 +9,8 @@
 
   <% if new_member_count > 0 %>
     <p style="margin-bottom: 15px;"> 
-      <%= link_to content_tag(:i, " Activate New Members", class: "fa fa-user admin-link"), activate_new_members_path, class: "admin-link" %>
+      <%= link_to content_tag(:i, " Activate New Members", class: "fa fa-user admin-link"), activate_new_members_path, class: "admin-link" %> | 
+      <%= link_to content_tag(:i, " Export New Members", class: "fa fa-download admin-link"), members_csv_path(format: :csv), class: "admin-link" %>
     </p>
   <% end %>
 </div>
@@ -18,9 +19,7 @@
   <div class="center" style="display: contents;"><p>No Members</p></div>
 <% else %>
   <p class="center" style="font-weight: normal;">
-    <% if new_member_count > 0 %>
-      <%= new_member_count %> New Members |
-    <% end %>
+    <%= "#{new_member_count} New Members |" if new_member_count > 0 %>
     <%= @members.where(status: "I").count %> In House |
     <%= @members.where(status: "O").count %> Out of House |
     <%= @members.where(status: "A").count %> Alumni

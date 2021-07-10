@@ -4,6 +4,14 @@ class MembersController < ApplicationController
     params[:admin] = true
   end
 
+  def csv_export
+    @new_members = Member.where(status: "N")
+
+    respond_to do |format|
+      format.csv {send_data @new_members.to_csv, filename: "New Member Export #{Date.today.strftime("%-m-%-d-%y")}.csv"}
+    end
+  end
+
   def new
     @member = Member.new
     params[:admin] = true
