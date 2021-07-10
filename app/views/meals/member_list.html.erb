@@ -27,9 +27,9 @@
   <p class="center">Total Members: <%= meal_list.length %></p>
   <table>
     <tr>
-      <td><b>Name</b></td>
+      <td class="center"><b>Name</b></td>
       <% if @meal_member_list.meal_type[1] == "G" %>
-        <td><b>Qty*</b></td>
+        <td class="center"><b>Qty*</b></td>
       <% end %>
     </tr>
     <% guest_total = 0 %>
@@ -55,7 +55,7 @@
       </tr>
     <% end %>
   </table>
-  <br><br>
+
   <% if meal_type[1] == "G" %>
     <p class="center">*Quantity is only the number of guests<br> and does not include the member himself.</p>
   <% end %>
