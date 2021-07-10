@@ -1,5 +1,11 @@
 <h1>Meal Count by Member</h1>
 
+<div class="center" style="display: contents;">
+  <p>
+    <%= link_to content_tag(:i, " Export Meals", class: "fa fa-download admin-link"), meals_csv_path(start_date: @treasurer.start_date, end_date: @treasurer.end_date, format: :csv), class: "admin-link" %>
+  </p>
+</div>
+
 <p style="font-weight: normal; margin-bottom: 15px;" class="center">Calculated as any meals for Out of House, excluding Wednesday Dinner,<br> and any guests brought by an In House Member</p>
 
 <%= form_for @treasurer, url: meals_path(@treasurer), html: {method: :get} do |f| %>

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resource :meals, only: [:edit]
   post "/meals", to: "meals#update"
   get "/meals", to: "meals#index"
+  get "/meals_csv", to: "meals#csv_export"
   get "/meals/list", to: "meals#list"
   post "/meals/list", to: "meals#list"
   get "/meals/member_list", to: "meals#member_list"

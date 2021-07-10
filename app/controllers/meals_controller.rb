@@ -1,11 +1,20 @@
 class MealsController < ApplicationController
   def index
-    start_date = params[:treasurer] && params[:treasurer][:start_date]
-    end_date = params[:treasurer] && params[:treasurer][:end_date]
     @treasurer = Treasurer.new(
-      start_date: start_date || start_of_semester,
-      end_date: end_date || Date.today
+      start_date: (params[:treasurer] && params[:treasurer][:start_date]) || start_of_semester,
+      end_date: (params[:treasurer] && params[:treasurer][:end_date]) || Date.today
     )
+  end
+
+  def csv_export
+    @treasurer = Treasurer.new(
+      start_date: params[:start_date],
+      end_date: params[:end_date]
+    )
+
+    respond_to do |format|
+      format.csv {send_data @treasurer.to_csv, filename: "Extra Meals From #{@treasurer.start_date.to_date.strftime("%-m-%-d-%y")} to #{@treasurer.end_date.to_date.strftime("%-m-%-d-%y")}.csv"}
+    end
   end
 
   def edit
