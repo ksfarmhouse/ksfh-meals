@@ -1,11 +1,11 @@
 class MembersController < ApplicationController
   def index
-    @members = Member.all.order(:last)
+    @members = Member.all.order(:last, :first)
     params[:admin] = true
   end
 
   def csv_export
-    @new_members = Member.where(status: "N")
+    @new_members = Member.where(status: "N").order(:last, :first)
 
     respond_to do |format|
       format.csv {send_data @new_members.to_csv, filename: "New Member Export #{Date.today.strftime("%-m-%-d-%y")}.csv"}
@@ -71,7 +71,7 @@ class MembersController < ApplicationController
   end
 
   def mass_edit
-    @members = Member.all.order(:last).to_a
+    @members = Member.all.order(:last, :first).to_a
     params[:admin] = true
   end
 
