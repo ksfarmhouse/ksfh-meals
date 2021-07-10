@@ -22,10 +22,10 @@ class Member < ApplicationRecord
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
-      csv << %w{Member}
+      csv << %w{First Last}
 
       all.each do |member|
-        csv << [member.full_name]
+        csv << [member.first, member.last]
       end
     end
   end
