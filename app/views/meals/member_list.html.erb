@@ -27,7 +27,7 @@
   <p class="center">Total Members: <%= meal_list.length %></p>
   <table>
     <tr>
-      <td class="center"><b>Name</b></td>
+      <td><b>Name</b></td>
       <% if @meal_member_list.meal_type[1] == "G" %>
         <td class="center"><b>Qty*</b></td>
       <% end %>
@@ -35,7 +35,7 @@
     <% guest_total = 0 %>
     <% meal_list.each do |member| %>
       <tr>
-        <td class="center"><%= member.full_name %></td>
+        <td><%= member.full_name %></td>
         <% if meal_type[1] == "G" %>
           <% meal = Meal.find_by(date: @meal_member_list.date, member_id: member.member_id) %>
           <% if meal_type == "LG" %>
@@ -50,7 +50,7 @@
     <% end %>
     <% if meal_type[1] == "G" %>
       <tr>
-        <td class="center"><b>Total Guests</b></td>
+        <td><b>Total Guests</b></td>
         <td class="center"><b><%= guest_total %></b></td>
       </tr>
     <% end %>

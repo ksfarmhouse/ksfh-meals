@@ -47,6 +47,49 @@ class MealsController < ApplicationController
     end
   end
 
+  def meals_ajax
+    member = Member.find_by(member_id: params[:member_id])
+    date = params[:date].to_date
+    @meal = Meal.where(member_id: member.member_id, date: date).first
+
+    if @meal.blank?
+      @meal = Meal.new()
+      @meal.lunch_qty = 1
+      @meal.dinner_qty = 1
+      wm = WeeklyMeal.find_by(member_id: member.member_id)
+
+      case date.wday()
+      when 1 #Monday
+        @meal.lunch = wm.mon_lunch
+        @meal.dinner = wm.mon_dinner
+      when 2 #Tueday
+        @meal.lunch = wm.tue_lunch
+        @meal.dinner = wm.tue_dinner
+      when 3 #Wednesday
+        @meal.lunch = wm.wed_lunch
+        @meal.dinner = wm.wed_dinner
+      when 4 #Thursday
+        @meal.lunch = wm.thu_lunch
+        @meal.dinner = wm.thu_dinner
+      when 5 #Friday
+        @meal.lunch = wm.fri_lunch
+        @meal.dinner = wm.fri_dinner
+      else
+        if member.in_house?
+          @meal.lunch = "LI"
+          @meal.dinner = "DI"
+        else
+          @meal.lunch = "LO"
+          @meal.dinner = "DO"
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def list
     start_date = params[:meal_list] && params[:meal_list][:start_date]
     end_date = params[:meal_list] && params[:meal_list][:end_date]

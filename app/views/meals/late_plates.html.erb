@@ -9,10 +9,10 @@
 <% else %>
   <table>
     <tr>
-      <td class="center"><b>Name</b></td>
+      <td><b>Name</b></td>
     </tr>
     <% @lunch_late_plates.each do |ll| %>
-      <tr><td class="center"><%= ll.full_name %></td></tr>
+      <tr><td><%= ll.full_name %></td></tr>
     <% end %>
   </table>
 <% end %>
@@ -23,10 +23,10 @@
 <% else %>
   <table>
     <tr>
-      <td class="center"><b>Name</b></td>
+      <td><b>Name</b></td>
     </tr>
     <% @dinner_late_plates.each do |ll| %>
-      <tr><td class="center"><%= ll.full_name %></td></tr>
+      <tr><td><%= ll.full_name %></td></tr>
     <% end %>
   </table>
 <% end %>

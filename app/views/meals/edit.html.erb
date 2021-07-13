@@ -23,3 +23,12 @@
 
   <%= f.submit "Submit" %>
 <% end %>
+<div class="result"></div>
+
+<script type="text/javascript">
+  $("#meal_member_id, #meal_date").change(function() {
+    $.get( "/meals_ajax/" + $("#meal_member_id").val() + "/" + $("#meal_date").val(), function( data ) {
+      data
+    });
+  });
+</script>

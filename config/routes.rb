@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "activate_new_members", to: "members#activate_new_members"
 
   resource :meals, only: [:edit]
+  get "/meals_ajax/:member_id/:date", to: "meals#meals_ajax"
   post "/meals", to: "meals#update"
   get "/meals", to: "meals#index"
   get "/meals_csv", to: "meals#csv_export"
