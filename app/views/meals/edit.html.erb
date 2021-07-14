@@ -27,8 +27,13 @@
 
 <script type="text/javascript">
   $("#meal_member_id, #meal_date").change(function() {
-    $.get( "/meals_ajax/" + $("#meal_member_id").val() + "/" + $("#meal_date").val(), function( data ) {
+    var member_id = $("#meal_member_id").val() || "0"
+    var date = $("#meal_date").val() || Date.today()
+    $.get( "/meals_ajax/" + member_id + "/" + date, function( data ) {
       data
     });
   });
+
+  $('#meal_lunch').val(null);
+  $('#meal_dinner').val(null);
 </script>

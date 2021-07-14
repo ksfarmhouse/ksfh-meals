@@ -1,4 +1,6 @@
-$('#meal_lunch').val("<%= @meal.lunch %>");
-$('#meal_lunch_qty').val("<%= @meal.lunch_qty %>");
-$('#meal_dinner').val("<%= @meal.dinner %>");
-$('#meal_dinner_qty').val("<%= @meal.dinner_qty %>");
+<% if @member %>
+  $('#meal_lunch').val("<%= @meal.lunch %>");
+  $('#meal_lunch_qty').val("<%= @meal.lunch_qty %>");
+  $('#meal_dinner').val("<%= @meal.dinner %>");
+  $('#meal_dinner_qty').val("<%= @meal.dinner_qty %>");
+<% end %>
