@@ -47,19 +47,11 @@ class MembersController < ApplicationController
     @member = Member.find(params[:id])
     respond_to do |format|
       if @member.update(member_params)
-        if params[:member][:update_weekly_meals] == "1"
-          if @member.in_house?
-            if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.in_meals)
-              format.html {redirect_to members_path, notice: "Member and Weekly Meals Updated!"}
-            else
-              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
-            end
+        if params[:member][:update_weekly_meals] == "1" && !@member.in_house?
+          if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.out_meals) && Meal.where(member_id: @member.member_id).update_all(lunch: "LO", dinner: "DO")
+            format.html {redirect_to members_path, notice: "Member and Weekly Meals Updated!"}
           else
-            if WeeklyMeal.find_by(member_id: @member.member_id).update(WeeklyMeal.out_meals)
-              format.html {redirect_to members_path, notice: "Member and Weekly Meals Updated!"}
-            else
-              format.html {redirect_to edit_members_path(id: @member.id), notice: "Member Updated, Weekly Meals Not Updated!"}
-            end
+            format.html {redirect_to edit_members_path(id: @member.id), alert: "Member Updated, Weekly Meals Not Updated!"}
           end
         else
           format.html {redirect_to members_path, notice: "Member Updated!"}

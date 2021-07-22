@@ -1,6 +1,18 @@
 <% if @member %>
+  $("#member-not-found").hide();
+  $('#meal_lunch').prop("disabled",false);
+  $('#meal_lunch_qty').prop("disabled",false);
   $('#meal_lunch').val("<%= @meal.lunch %>");
   $('#meal_lunch_qty').val("<%= @meal.lunch_qty %>");
+
+  $('#meal_dinner').prop("disabled",false);
+  $('#meal_dinner_qty').prop("disabled",false);
   $('#meal_dinner').val("<%= @meal.dinner %>");
   $('#meal_dinner_qty').val("<%= @meal.dinner_qty %>");
+<% else %>
+  $("#member-not-found").show();
+  $('#meal_lunch').prop("disabled",true);
+  $('#meal_lunch_qty').prop("disabled",true);
+  $('#meal_dinner').prop("disabled",true);
+  $('#meal_dinner_qty').prop("disabled",true);
 <% end %>

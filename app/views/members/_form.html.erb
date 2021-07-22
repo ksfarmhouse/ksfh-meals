@@ -1,25 +1,34 @@
-<%= f.label :member_id, "Member ID:" %>
+<%= f.label :member_id, "Member ID" %>
 <%= f.text_field :member_id, size: 4, required: true, disabled: @member.persisted? %>
 <br><br>
 
-<%= f.label :first, "First Name:" %>
+<%= f.label :first, "First Name" %>
 <%= f.text_field :first, size: 20, required: true %>
 <br><br>
 
-<%= f.label :last, "Last Name:" %>
+<%= f.label :last, "Last Name" %>
 <%= f.text_field :last, size: 20, required: true %>
 <br><br>
 
-<%= f.label :status, "Status:" %>
+<%= f.label :status %>
 <%= f.select :status, options_for_select(Member::MEMBER_STATUSES, @member.status) %>
 <br><br>
 
-<% if @member.persisted? %>
-  <%= f.check_box :update_weekly_meals %>
-  <%= f.label :update_weekly_meals, "Reset Member's Weekly Meals to Match Status" %>
+<% if @member.persisted? && @member.in_house? %>
+  <%= f.check_box :update_weekly_meals, disabled: true; %>
+  <%= f.label :update_weekly_meals, "Member Changed From In House to Out of House or Alumni Mid-Semester" %>
   <br>
-  <p style="font-weight: normal;">^ Only use if changing from In House to something, and not reseting meals afterwards, or if you need to reset only this member's meals.</p>
+  <p style="font-weight: normal;">^ This will reset the weekly meals and extra meals to be Out so they don't get charged for previous meals.</p>
   <br>
+
+  <script type="text/javascript">
+    $("#member_status").change(function() {
+      var disabled = true;
+      if ($("#member_status").val() == "O" || $("#member_status").val() == "A")
+        disabled = false
+      $("#member_update_weekly_meals").prop("disabled", disabled);
+    });
+  </script>
 <% end %>
 
 <%= f.submit %>

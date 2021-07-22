@@ -1,8 +1,9 @@
 <h1>FarmHouse Meal Sign Up</h1>
 
 <%= form_for @meal, :url => {:action => "update"} do |f| %>
-  <%= f.label :member_id, "Member ID:" %>
+  <%= f.label :member_id, "Member ID" %>
   <%= f.text_field :member_id, size: 4, required: true %>
+  <span id="member-not-found">Member Not Found</span>
   <br><br>
 
   <%= f.label :date %>
@@ -10,15 +11,15 @@
   <br><br>
 
   <%= f.label :lunch %>
-  <%= f.select :lunch, options_for_select(Meal::LUNCH_TYPES) %>
-  <%= f.label :lunch_qty, "Quantity" %>
-  <%= f.number_field :lunch_qty, value: 1, min: 1 %>
+  <%= f.select :lunch, options_for_select(Meal::LUNCH_TYPES), {}, {disabled: true} %>
+    <%= f.label :lunch_qty, "Quantity" %>
+  <%= f.number_field :lunch_qty, value: 1, min: 1, disabled: true %>
   <br><br>
 
   <%= f.label :dinner %>
-  <%= f.select :dinner, options_for_select(Meal::DINNER_TYPES) %>
+  <%= f.select :dinner, options_for_select(Meal::DINNER_TYPES), {}, {disabled: true} %>
   <%= f.label :dinner_qty, "Quantity" %>
-  <%= f.number_field :dinner_qty, value: 1, min: 1 %>
+  <%= f.number_field :dinner_qty, value: 1, min: 1, disabled: true %>
   <br><br>
 
   <%= f.submit "Submit" %>
@@ -33,7 +34,4 @@
       data
     });
   });
-
-  $('#meal_lunch').val(null);
-  $('#meal_dinner').val(null);
 </script>
