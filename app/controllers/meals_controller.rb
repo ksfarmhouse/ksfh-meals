@@ -76,7 +76,7 @@ class MealsController < ApplicationController
           @meal.lunch = wm.fri_lunch
           @meal.dinner = wm.fri_dinner
         else
-          if member.in_house?
+          if @member.in_house?
             @meal.lunch = "LI"
             @meal.dinner = "DI"
           else

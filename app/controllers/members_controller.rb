@@ -62,6 +62,15 @@ class MembersController < ApplicationController
     end
   end
 
+  def members_ajax
+    @id_present = Member.where(member_id: params[:member_id]).present?
+
+    respond_to do |format|
+      format.js
+    end
+  end
+
+
   def mass_edit
     @members = Member.all.order(:last, :first).to_a
     params[:admin] = true

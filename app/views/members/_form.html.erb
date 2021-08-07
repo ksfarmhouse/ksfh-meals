@@ -1,5 +1,9 @@
 <%= f.label :member_id, "Member ID" %>
 <%= f.text_field :member_id, size: 4, required: true, disabled: @member.persisted? %>
+<% if @member.new_record? %>
+  <a href="javascript:void(0)" class="admin-link" id="random">Random Number</a>
+  <span id="member-id-unique"><br>Member ID Not Unique</span>
+<% end %>
 <br><br>
 
 <%= f.label :first, "First Name" %>
@@ -32,3 +36,18 @@
 <% end %>
 
 <%= f.submit %>
+
+<% if @member.new_record? %>
+  <script type="text/javascript">
+    $("#random").click(function(){
+      $("#member_member_id").val(Math.floor(Math.random() * 8999) + 1000).trigger("change")
+    })
+
+    $("#member_member_id").change(function(){
+      var member_id = $("#member_member_id").val() || "0"
+      $.get( "/members_ajax/" + member_id, function( data ) {
+        data
+      });
+    })
+  </script>
+<% end %>

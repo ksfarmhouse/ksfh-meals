@@ -223,7 +223,7 @@ table h3 {
   text-align: center;
 }
 
-#member-not-found {
+#member-not-found, #member-id-unique {
   display: none;
   color: red;
   font-size: 0.8em;
