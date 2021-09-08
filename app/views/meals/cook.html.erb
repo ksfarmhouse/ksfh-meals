@@ -68,6 +68,8 @@
 <p class="center" style="margin-top: 20px;">
   Set For: In + Guests - Crew<br>
   Crew: <%= @crew_numbers.lunch_crew_num %> for Lunch, <%= @crew_numbers.dinner_crew_num %> for Dinner<br>
-  Table Capacity: <%= @crew_numbers.table_capacity %>
+  Table Capacity: <%= @crew_numbers.table_capacity %><br><br>
+  The House Mom's schedule is accounted for <br>
+  <%= "The Advisor is also accounted for Wednesday Dinner" if Date.today.wday() == 3 %>
 </p>
 
