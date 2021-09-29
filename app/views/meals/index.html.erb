@@ -6,7 +6,7 @@
   </p>
 </div>
 
-<p style="font-weight: normal; margin-bottom: 15px;" class="center">Calculated as any meals for Out of House, excluding Wednesday Dinner,<br> and any guests brought by an In House Member</p>
+<p style="font-weight: normal; margin-bottom: 15px;" class="center">Calculated as any meals for Out of House,<br> and any guests brought by an In House Member<br><br> *Dinners exclude Wednesday dinner for OOH,<br> as that is calculated in the next column.</p>
 
 <%= form_for @treasurer, url: meals_path(@treasurer), html: {method: :get} do |f| %>
   <div class="center">
@@ -31,13 +31,15 @@
     <tr>
       <td><b>Member</b></td>
       <td><b>Lunches</b></td>
-      <td><b>Dinners</b></td>
+      <td><b>Dinners*</b></td>
+      <td><b>Wed Dinners</b></td>
     </tr>
     <% meal_count.each do |member, meals| %>
       <tr>
         <td><%= member.full_name %></td>
         <td class="center"><%= meals["lunch"] %></td>
         <td class="center"><%= meals["dinner"] %></td>
+        <td class="center"><%= meals["wed_dinner"] %></td>
       </tr>
     <% end %>
   </table>

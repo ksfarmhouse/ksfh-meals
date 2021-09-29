@@ -127,12 +127,14 @@ module MealHelper
       members[member_id] = {}
       members[member_id]["lunch"] = 0
       members[member_id]["dinner"] = 0
+      members[member_id]["wed_dinner"] = 0
     end
 
     meals.map do |meal|
       member = Member.find_by(member_id: meal.member_id)
       lunch = 0
       dinner = 0
+      wed_dinner = 0
       if member.in_house?
         lunch += meal.lunch_qty - 1
         dinner += meal.dinner_qty - 1
@@ -142,10 +144,13 @@ module MealHelper
         end
         if meal.dinner != "DO" && meal.date.wday() != 3 #Wednesday Dinner
           dinner += meal.dinner_qty
+        elsif meal.dinner != "DO" && meal.date.wday() == 3 #Wednesday Dinner
+          wed_dinner += meal.dinner_qty
         end
       end
       members[member.member_id]["lunch"] += lunch
       members[member.member_id]["dinner"] += dinner
+      members[member.member_id]["wed_dinner"] += wed_dinner
     end
     members = members.reject{|m, v| v["lunch"] == 0 && v["dinner"] == 0}
 
