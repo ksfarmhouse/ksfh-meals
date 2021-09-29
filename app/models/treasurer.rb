@@ -10,10 +10,10 @@ class Treasurer
       csv << ["From #{self.start_date.to_date.strftime("%B %-d, %Y")} to #{self.end_date.to_date.strftime("%B %-d, %Y")}"]
       csv << []
 
-      csv << %w{Member Lunches Dinners}
+      csv << %w{Member Lunches Dinners Wed\ Dinners}
 
       meal_count.each do |member, meals|
-        csv << [member.full_name, meals["lunch"], meals["dinner"]]
+        csv << [member.full_name, meals["lunch"], meals["dinner"], meals["wed_dinner"]]
       end
     end
   end
