@@ -3,8 +3,8 @@ Basic website for FarmHouse members to request late plates and to sign in or out
 This is the new Ruby Version of the website.
 
 ## Specs:
-Ruby Version: 2.7.2<br>
-Rails Version: 6.1.1
+Ruby Version: 3.0.2<br>
+Rails Version: 6.1.4
 
 ## Pages:
 ### Meal Sign Up
