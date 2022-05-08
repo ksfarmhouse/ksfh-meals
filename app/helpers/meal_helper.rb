@@ -130,7 +130,7 @@ module MealHelper
       members[member_id]["wed_dinner"] = 0
     end
 
-    meals.map do |meal|
+    meals.each do |meal|
       member = Member.find_by(member_id: meal.member_id)
       lunch = 0
       dinner = 0

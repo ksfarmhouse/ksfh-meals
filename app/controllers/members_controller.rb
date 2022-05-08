@@ -109,7 +109,7 @@ class MembersController < ApplicationController
   def delete
     @member = Member.find(params[:id])
     respond_to do |format|
-      if @member.delete && WeeklyMeal.find_by(member_id: @member.member_id).delete && Meal.find_by(member_id: @member.member_id).delete
+      if @member.delete && WeeklyMeal.find_by(member_id: @member.member_id).delete && Meal.where(member_id: @member.member_id).destroy_all
         format.html {redirect_to members_path, notice: "Member Deleted!"}
       else
         format.html {redirect_to members_path, alert: "Unable to Delete Member!"}
