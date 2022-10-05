@@ -21,7 +21,8 @@
         <td><%= item.lunch %></td>
         <td><%= item.dinner %></td>
         <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-pencil"), menu_edit_path(id: item.id), style: "color: blue" %></td>
-        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"),  menu_delete_path(id: item.id), style: "color: red", data: { confirm: "Are you sure you want to delete the menu item for #{item.date.strftime("%m/%d/%y")}?" } %></td>
+        <td></td>
+        <!-- <td class="center"><%#= link_to content_tag(:i, "", class: "fa fa-trash"),  menu_delete_path(id: item.id), style: "color: red", data: { confirm: "Are you sure you want to delete the menu item for #{item.date.strftime("%m/%d/%y")}?" } %></td> -->
       </tr>
     <% end %>
   </table>

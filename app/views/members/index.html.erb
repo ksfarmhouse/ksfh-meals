@@ -43,7 +43,8 @@
         <td><%= member.last %></td>
         <td><%= full_status_name(member.status) %></td>
         <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-pencil"),  edit_members_path(id: member.id), style: "color: blue" %></td>
-        <td class="center"><%= link_to content_tag(:i, "", class: "fa fa-trash"), members_delete_path(id: member.id), style: "color: red", data: { confirm: "Are you sure you want to delete #{member.full_name}?" } %></td>
+        <td></td>
+        <!-- <td class="center"><%#= link_to content_tag(:i, "", class: "fa fa-trash"), members_delete_path(id: member.id), style: "color: red", data: { confirm: "Are you sure you want to delete #{member.full_name}?" } %></td> -->
       </tr>
     <% end %>
   </table>
