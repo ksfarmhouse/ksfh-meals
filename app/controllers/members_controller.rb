@@ -1,10 +1,12 @@
 class MembersController < ApplicationController
   def index
+    redirect_to techchair_login_path unless logged_in?
     @members = Member.all.order(:last, :first)
     params[:admin] = true
   end
 
   def csv_export
+    redirect_to techchair_login_path unless logged_in?
     @new_members = Member.where(status: "N").order(:last, :first)
 
     respond_to do |format|
@@ -13,11 +15,13 @@ class MembersController < ApplicationController
   end
 
   def new
+    redirect_to techchair_login_path unless logged_in?
     @member = Member.new
     params[:admin] = true
   end
 
   def create
+    redirect_to techchair_login_path unless logged_in?
     @member = Member.new(member_params)
     respond_to do |format|
       if Member.where(member_id: params[:member][:member_id]).blank?
@@ -39,11 +43,13 @@ class MembersController < ApplicationController
   end
 
   def edit
+    redirect_to techchair_login_path unless logged_in?
     @member = Member.find(params[:id])
     params[:admin] = true
   end
 
   def update
+    redirect_to techchair_login_path unless logged_in?
     @member = Member.find(params[:id])
     respond_to do |format|
       if @member.update(member_params)
@@ -72,11 +78,13 @@ class MembersController < ApplicationController
 
 
   def mass_edit
+    redirect_to techchair_login_path unless logged_in?
     @members = Member.all.order(:last, :first).to_a
     params[:admin] = true
   end
 
   def mass_edit_update
+    redirect_to techchair_login_path unless logged_in?
     succeed = true
 
     params[:member].each do |member|
@@ -96,6 +104,7 @@ class MembersController < ApplicationController
   end
 
   def activate_new_members
+    redirect_to techchair_login_path unless logged_in?
     respond_to do |format|
       if Member.where(status: "N").update_all(status: "I")
         format.html {redirect_to members_path, notice: "Members Updated!"}
@@ -107,6 +116,7 @@ class MembersController < ApplicationController
   end
 
   def delete
+    redirect_to techchair_login_path unless logged_in?
     @member = Member.find(params[:id])
     respond_to do |format|
       if @member.delete && WeeklyMeal.find_by(member_id: @member.member_id).delete && Meal.where(member_id: @member.member_id).destroy_all

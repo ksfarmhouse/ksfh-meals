@@ -123,11 +123,13 @@ class MealsController < ApplicationController
   end
 
   def reset_meals
+    redirect_to techchair_login_path unless logged_in?
     @meals = Meal.new
     params[:admin] = true
   end
 
   def reset_meals_post
+    redirect_to techchair_login_path unless logged_in?
     ih_status = Member.where(status: "I").or(Member.where(status: "N")).map do |member|
       weekly_meal = WeeklyMeal.find_by(member_id: member.member_id).update(WeeklyMeal.in_meals)
     end

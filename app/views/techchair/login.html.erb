@@ -1,0 +1,11 @@
+<h1>Tech Chair Login</h1>
+
+<p style="margin-bottom: 25px;" class="center">Please login to view these pages</p>
+
+<%= form_with do |f| %>
+  <%= f.label :password %>
+  <%= f.password_field :password, size: 20, maxlength: 70, required: true %>
+  <%= f.submit "Submit" %>
+<% end %>
+
+<%= link_to "Reset Password", techchair_reset_password_path, style: "margin-top: 25px;" %>

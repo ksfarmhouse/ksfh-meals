@@ -1,10 +1,12 @@
 class CrewNumbersController < ApplicationController
   def edit
+    redirect_to techchair_login_path unless logged_in?
     params[:admin] = true
     @crew_numbers = CrewNumber.all.first!
   end
 
   def update
+    redirect_to techchair_login_path unless logged_in?
     crew_numbers = CrewNumber.all.first!
 
     respond_to do |format|

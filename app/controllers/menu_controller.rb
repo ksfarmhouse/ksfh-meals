@@ -4,11 +4,13 @@ class MenuController < ApplicationController
   end
 
   def new
+    redirect_to techchair_login_path unless logged_in?
     @menu = Menu.new(date: Date.today)
     params[:admin] = true
   end
 
   def create
+    redirect_to techchair_login_path unless logged_in?
     @menu = Menu.new(menu_params)
     respond_to do |format|
       if Menu.where(date: @menu.date).blank?
@@ -24,11 +26,13 @@ class MenuController < ApplicationController
   end
 
   def edit
+    redirect_to techchair_login_path unless logged_in?
     @menu = Menu.find(params[:id])
     params[:admin] = true
   end
 
   def update
+    redirect_to techchair_login_path unless logged_in?
     @menu = Menu.find(params[:id])
     respond_to do |format|
       if @menu.update(menu_params)
@@ -40,11 +44,13 @@ class MenuController < ApplicationController
   end
 
   def list
+    redirect_to techchair_login_path unless logged_in?
     @items = Menu.all.order(:date)
     params[:admin] = true
   end
 
   def delete
+    redirect_to techchair_login_path unless logged_in?
     @menu = Menu.find(params[:id])
     respond_to do |format|
       if @menu.delete

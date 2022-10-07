@@ -2,6 +2,12 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "meals#edit"
   get "/techchair", to: "techchair#index"
+  get "/techchair/login", to: "techchair#login"
+  post "/techchair/login", to: "techchair#login_post"
+  get "/techchair/logout", to: "techchair#logout"
+  get "/techchair/reset_password", to: "techchair#reset_password"
+  get "/techchair/reset_techchair_password", to: "techchair#reset_techchair_password"
+  post "/techchair/reset_techchair_password", to: "techchair#reset_techchair_password_post"
 
   resource :members, except: [:show]
   get "/members", to: "members#index"
