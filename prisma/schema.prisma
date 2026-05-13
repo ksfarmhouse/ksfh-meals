@@ -1,0 +1,56 @@
+// KSFH Meals — Prisma schema
+// All application state lives in Supabase Postgres. No filesystem persistence.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Pooled connection (port 6543) used at runtime. Required for serverless on Vercel.
+  url       = env("DATABASE_URL")
+  // Direct connection (port 5432) used by `prisma migrate` only.
+  directUrl = env("DIRECT_URL")
+}
+
+enum HouseStatus {
+  NewMember
+  InHouse
+  OutOfHouse
+  Alumni
+}
+
+// One row per fraternity member. `id` is the user-entered identifier (e.g. "1855")
+// and is the primary key — typed as String so it can hold non-numeric IDs cleanly.
+model Member {
+  id          String      @id
+  firstName   String
+  lastName    String
+  // Denormalized "First Last" — kept in sync by server actions on every write.
+  // Used for case/whitespace-insensitive lookup on /find-id.
+  fullName    String
+  houseStatus HouseStatus
+  lunchesOwed Int         @default(0)
+  dinnersOwed Int         @default(0)
+
+  // 12-slot meal plan. Indexes:
+  //   0=MonLunch  1=MonDinner  2=TueLunch  3=TueDinner
+  //   4=WedLunch  5=WedDinner  6=ThuLunch  7=ThuDinner
+  //   8=FriLunch  9=FriDinner  10=SatLunch 11=SunLunch
+  // Values: 0=In, 1=Out, 2=Early, 3=Late.
+  weeklyPlan  Int[]
+  defaultPlan Int[]
+
+  @@index([fullName])
+  @@index([houseStatus])
+}
+
+// Singleton table — always exactly one row with id = 1.
+// Seed inserts it if absent; admin form upserts it.
+model Menu {
+  id     Int      @id @default(1)
+  // 7 entries Mon..Sun
+  lunch  String[]
+  // 5 entries Mon..Fri (no Sat/Sun dinner)
+  dinner String[]
+}
