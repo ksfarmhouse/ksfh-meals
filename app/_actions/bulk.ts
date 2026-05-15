@@ -1,10 +1,10 @@
 // Bulk operations triggered from the /admin page:
 //
-//   rolloverMeals       — end-of-week chore. For out-of-house members, adds
-//                         to their lunch/dinner owed counts for any meal they
-//                         didn't mark Out this week; the treasurer bills off
-//                         those counts separately. Then resets everyone's
-//                         current week back to their default plan.
+//   rolloverMeals       — end-of-week chore. Resets every member's
+//                         weeklyPlan back to their defaultPlan. As a side
+//                         effect, for out-of-house members who didn't mark
+//                         Out, increments lunchesOwed / dinnersOwed so the
+//                         treasurer can bill them separately.
 //   resetMeals          — nuclear option. Rebuilds plans for everyone based
 //                         on house status and zeroes out owed counts. Used
 //                         at the start of a semester / after a break.
