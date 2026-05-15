@@ -30,7 +30,9 @@ export const metadata: Metadata = {
       "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
   },
   twitter: {
-    card: "summary",
+    // summary_large_image renders the crest prominently in Twitter / X cards.
+    // Next auto-injects /opengraph-image.png since that file exists in app/.
+    card: "summary_large_image",
     title: "KSFH Meals",
     description:
       "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
