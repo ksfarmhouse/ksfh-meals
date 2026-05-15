@@ -20,7 +20,25 @@ async function getMenu() {
 }
 
 export default async function MenuPage() {
-  const menu = await getMenu();
+  let menu;
+  try {
+    menu = await getMenu();
+  } catch (e) {
+    // TEMPORARY DEBUG: surface the actual Prisma error in production so we
+    // can diagnose the runtime issue without digging through Vercel logs.
+    // Revert this block once the root cause is fixed.
+    const err = e as Error;
+    return (
+      <div className="max-w-3xl">
+        <h1 className="fh-page-title">Debug: DB error</h1>
+        <pre className="p-3 bg-fh-white border-2 border-red-600 rounded text-xs whitespace-pre-wrap break-words">
+          {err.name}: {err.message}
+          {"\n\n"}
+          {err.stack}
+        </pre>
+      </div>
+    );
+  }
 
   return (
     <div className="text-center">
