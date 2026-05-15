@@ -37,12 +37,11 @@ function b64urlDecode(s: string): Uint8Array {
   return out;
 }
 
+// Pulled through the validated env module so a misconfigured server fails
+// at startup with a clear message, not on first cookie verification.
+import { env } from "./env";
 function getSecret(): string {
-  const s = process.env.SESSION_SECRET;
-  if (!s || s.length < 32) {
-    throw new Error("SESSION_SECRET must be set and at least 32 characters");
-  }
-  return s;
+  return env.SESSION_SECRET;
 }
 
 async function hmac(data: string): Promise<Uint8Array> {

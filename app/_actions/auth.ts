@@ -11,6 +11,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { SESSION_COOKIE, signSession } from "@/app/_lib/session";
+import { env } from "@/app/_lib/env";
 
 const LoginSchema = z.object({
   password: z.string().min(1, "Password is required"),
@@ -73,11 +74,7 @@ export async function login(
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
-  const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) {
-    return { ok: false, error: "Server is missing ADMIN_PASSWORD" };
-  }
-  if (parsed.data.password !== expected) {
+  if (parsed.data.password !== env.ADMIN_PASSWORD) {
     recordFailure();
     await new Promise((r) => setTimeout(r, FAIL_DELAY_MS));
     return { ok: false, error: "Incorrect password" };

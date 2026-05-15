@@ -161,4 +161,61 @@ Brand colors are defined as CSS variables in `app/globals.css` and exposed as
 Tailwind colors `fh-green`, `fh-gold`, `fh-white`, `fh-light-green`. Page
 titles use `.fh-page-title` (3px gold underline). Buttons use `.fh-btn` (green
 → gold on hover). Navbar uses `.fh-pill` / `.fh-pill-active`. Tables use
-`.fh-table`.
+`.fh-table` (centered cells by default; add `fh-table-left` for the roster).
+
+## Extending the app
+
+Common changes and where to make them:
+
+### Add a new env var
+1. Add it to `EnvSchema` in `app/_lib/env.ts` (required or optional).
+2. Update `.env.example` with a placeholder.
+3. Set it in Vercel's Environment Variables page.
+4. Read it via `import { env } from "@/app/_lib/env"` — never via
+   `process.env.X` directly. The validation throws at startup if a required
+   var is missing or malformed, which is much friendlier than a cryptic
+   runtime crash.
+
+### Add a new admin bulk action (like Rollover / Reset / Promote)
+1. Add the server action to `app/_actions/bulk.ts` (mirror an existing one).
+   Wrap mutations in `prisma.$transaction(...)` so partial failures don't
+   strand data.
+2. Add an entry to the `ACTIONS` array in `app/admin/BulkActions.tsx` with
+   label, description, and confirmation prompt.
+3. That's it — the UI auto-renders the new card.
+
+### Add a new member field
+1. Add it to `model Member` in `prisma/schema.prisma`.
+2. Run `npm run db:recover` locally against your dev database. The guardrail
+   will refuse if rows exist; pass `-- --force` to override (this is
+   `prisma db push`, which can rewrite columns).
+3. Update `app/_actions/roster.ts`: `NewMemberSchema` (for input validation
+   on Add Member) and the `RosterRow`/`AddedMember` types.
+4. Update `app/admin/roster/RosterManager.tsx` so the new field is editable
+   in the Add Member form and shown in the roster table.
+
+### Change the meal slot layout (e.g. add a Sunday dinner)
+This one is the riskiest — the 12-slot layout is referenced in many places.
+Steps if you ever need to:
+1. Update the slot table comment + `SLOT_COUNT` in `app/_lib/meals.ts`.
+2. Update `LUNCH_SLOTS` / `DINNER_SLOTS` so the rollover billing buckets
+   are still right.
+3. Update `MealPlanTable.tsx` to render the new slot, and the public menu
+   page in `app/page.tsx` (the Sat/Sun table) plus `app/admin/MenuForm.tsx`.
+4. Run a one-shot script that pads each member's `weeklyPlan` and
+   `defaultPlan` arrays to the new length before deploying — otherwise
+   every page that reads `plan[newIndex]` will get `undefined`.
+
+### Add a new page
+1. Create `app/<slug>/page.tsx`. Server Component by default; add
+   `"use client"` only for things that need local state.
+2. Add a `<Link>` to `LINKS` in `components/Navbar.tsx`.
+3. If it should be public, no other changes. If it should be admin-gated,
+   put it under `app/admin/...` — `middleware.ts` already protects that
+   path.
+
+## CI
+
+`.github/workflows/ci.yml` runs `prisma generate`, `tsc --noEmit`, and
+`npm run build` on every push and PR to `main` / `dev`. Lets you catch
+broken commits before Vercel sees them.
