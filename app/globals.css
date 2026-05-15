@@ -77,8 +77,15 @@ body {
 .fh-table td {
   border: 1px solid var(--fh-green);
   padding: 0.5rem 0.75rem;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
+}
+
+/* Opt-out modifier — used by the admin roster table where name columns
+   read more naturally left-aligned. */
+.fh-table-left th,
+.fh-table-left td {
+  text-align: left;
 }
 .fh-table thead th {
   background-color: var(--fh-green);

@@ -210,7 +210,7 @@ export function RosterManager({ initial }: Props) {
 
               {/* Tablet / desktop layout: original table. */}
               <div className="hidden sm:block overflow-x-auto">
-                <table className="fh-table">
+                <table className="fh-table fh-table-left">
                   <thead>
                     <tr>
                       <th>First</th>
