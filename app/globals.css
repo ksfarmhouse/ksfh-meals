@@ -87,6 +87,17 @@ body {
 .fh-table-left td {
   text-align: left;
 }
+
+/* When inputs / selects sit inside a centered table cell, center their text
+   too so the values look aligned with the column header. */
+.fh-table .fh-input,
+.fh-table .fh-select {
+  text-align: center;
+}
+.fh-table-left .fh-input,
+.fh-table-left .fh-select {
+  text-align: left;
+}
 .fh-table thead th {
   background-color: var(--fh-green);
   color: var(--fh-white);
