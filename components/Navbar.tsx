@@ -13,6 +13,7 @@
 
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -112,7 +113,18 @@ export function Navbar() {
   return (
     <nav className="bg-fh-white border-b-4 border-fh-gold relative">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
-        <Link href="/" className="font-bold text-lg text-fh-green whitespace-nowrap">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-bold text-lg text-fh-green whitespace-nowrap"
+        >
+          <Image
+            src="/icon.png"
+            alt=""
+            width={36}
+            height={36}
+            priority
+            className="h-9 w-9"
+          />
           KSFH Meals
         </Link>
 
