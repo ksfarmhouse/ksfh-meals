@@ -1,8 +1,10 @@
 // Bulk operations triggered from the /admin page:
 //
-//   rolloverMeals       — end-of-week chore. Bills out-of-house members for
-//                         meals they didn't mark Out, then resets everyone's
-//                         current week to their default plan.
+//   rolloverMeals       — end-of-week chore. For out-of-house members, adds
+//                         to their lunch/dinner owed counts for any meal they
+//                         didn't mark Out this week; the treasurer bills off
+//                         those counts separately. Then resets everyone's
+//                         current week back to their default plan.
 //   resetMeals          — nuclear option. Rebuilds plans for everyone based
 //                         on house status and zeroes out owed counts. Used
 //                         at the start of a semester / after a break.
@@ -25,9 +27,13 @@ import {
 
 export type BulkResult = { ok: true; message: string } | { ok: false; error: string };
 
-// Rollover: bill out-of-house members for any meal slot they DIDN'T mark
-// "Out" this week (because that means they ate at the house and need to
-// pay for it), then copy each member's permanent defaultPlan back into
+// Rollover: for each out-of-house member, walks their weeklyPlan and
+// increments lunchesOwed / dinnersOwed for any slot they DIDN'T mark "Out"
+// (because that means they ate at the house). The treasurer reads those
+// counts off /treasurer and bills the member separately — this action
+// itself doesn't touch money.
+//
+// After tallying, copies each member's permanent defaultPlan back into
 // their current weeklyPlan to prepare for the next week.
 //
 // We bucket the increments by meal type (lunch vs dinner) using the
@@ -35,7 +41,7 @@ export type BulkResult = { ok: true; message: string } | { ok: false; error: str
 // treasurer report can show them separately.
 //
 // Everything happens inside one transaction — if any update fails, none
-// of them apply, so partial bills can't get stranded.
+// of them apply, so counts can't get partially stranded.
 export async function rolloverMeals(): Promise<BulkResult> {
   const members = await prisma.member.findMany();
   let updated = 0;

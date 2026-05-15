@@ -20,9 +20,9 @@ const ACTIONS: Array<{
     key: "rollover",
     label: "Rollover Meals",
     description:
-      "Bills out-of-house members for any meals they didn't mark Out this week, then copies each member's default plan back into the current week.",
+      "For each out-of-house member, adds to their Lunches Owed / Dinners Owed count for any meals they didn't mark Out this week. Then copies each member's default plan back into the current week. The treasurer uses the resulting counts to bill members separately.",
     confirm:
-      "This bills owed meals and overwrites every member's current week with their default plan. Continue?",
+      "This adds to lunches/dinners owed for out-of-house members and resets the current week to defaults. Continue?",
   },
   {
     key: "reset",

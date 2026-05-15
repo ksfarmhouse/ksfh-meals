@@ -1,12 +1,12 @@
 // Row of seven day-letter buttons (M T W TH F SA SU) used by /plates.
-// `selected` is the 0..6 day index, or null when no day has been chosen yet.
+// `selected` is the 0..6 day index of the currently active day.
 
 "use client";
 
 import { DAY_PICKER } from "@/app/_lib/meals";
 
 interface Props {
-  selected: number | null;
+  selected: number;
   onSelect: (i: number) => void;
 }
 

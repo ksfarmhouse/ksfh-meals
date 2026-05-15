@@ -7,14 +7,43 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "KSFH Meals",
-  description: "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
+  // The "%s | KSFH Meals" template lets individual pages set a short title
+  // and have the site name appended automatically.
+  title: {
+    default: "KSFH Meals",
+    template: "%s | KSFH Meals",
+  },
+  description:
+    "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
+  applicationName: "KSFH Meals",
+  appleWebApp: {
+    capable: true,
+    title: "KSFH Meals",
+    statusBarStyle: "default",
+  },
+  // OG / Twitter cards so iMessage / Discord / Slack previews don't render blank.
+  openGraph: {
+    type: "website",
+    siteName: "KSFH Meals",
+    title: "KSFH Meals",
+    description:
+      "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
+  },
+  twitter: {
+    card: "summary",
+    title: "KSFH Meals",
+    description:
+      "K-State FarmHouse meal sign-ups, weekly menu, and plate counts.",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Matches the brand green; tints the Android browser address bar and the
+  // iOS PWA status bar when installed.
+  themeColor: "#004d2d",
 };
 
 export default function RootLayout({

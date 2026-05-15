@@ -51,11 +51,17 @@ function countWith(
   );
 }
 
+// Today's day-of-week, mapped to our index (0=Mon … 6=Sun).
+// JS Date.getDay() returns 0=Sun..6=Sat; we shift so Mon=0.
+function todayIndex(): number {
+  return (new Date().getDay() + 6) % 7;
+}
+
 export function PlatesView({ members }: Props) {
-  const [day, setDay] = useState<number | null>(null);
+  // Defaults to today so the kitchen lands on the right day instantly.
+  const [day, setDay] = useState<number>(todayIndex());
 
   const view = useMemo(() => {
-    if (day === null) return null;
     const lunchSlot = lunchSlotForDay(day);
     const dinnerSlot = dinnerSlotForDay(day);
 
@@ -87,30 +93,24 @@ export function PlatesView({ members }: Props) {
     <div>
       <DayPicker selected={day} onSelect={setDay} />
 
-      {view === null ? (
-        <p className="p-4 bg-fh-white border-2 border-fh-green rounded">
-          Pick a day above to see plate counts.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <PlateCard
-            title="Early Lunch"
-            names={view.earlyLunch}
-            extra={<div>Set for {view.inAtLunch} Members</div>}
-          />
-          <PlateCard title="Late Lunch" names={view.lateLunch} />
-          {view.hasDinner && (
-            <>
-              <PlateCard
-                title="Early Dinner"
-                names={view.earlyDinner}
-                extra={<div>Set for {view.inAtDinner} Members</div>}
-              />
-              <PlateCard title="Late Dinner" names={view.lateDinner} />
-            </>
-          )}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <PlateCard
+          title="Early Lunch"
+          names={view.earlyLunch}
+          extra={<div>Set for {view.inAtLunch} Members</div>}
+        />
+        <PlateCard title="Late Lunch" names={view.lateLunch} />
+        {view.hasDinner && (
+          <>
+            <PlateCard
+              title="Early Dinner"
+              names={view.earlyDinner}
+              extra={<div>Set for {view.inAtDinner} Members</div>}
+            />
+            <PlateCard title="Late Dinner" names={view.lateDinner} />
+          </>
+        )}
+      </div>
     </div>
   );
 }

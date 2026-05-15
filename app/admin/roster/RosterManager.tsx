@@ -169,53 +169,94 @@ export function RosterManager({ initial }: Props) {
               No members yet — add one above.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="fh-table">
-                <thead>
-                  <tr>
-                    <th>First</th>
-                    <th>Last</th>
-                    <th>ID</th>
-                    <th>Status</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((r) => (
-                    <tr key={r.id}>
-                      <td>{r.firstName}</td>
-                      <td>{r.lastName}</td>
-                      <td>{r.id}</td>
-                      <td>
-                        <select
-                          className="fh-select"
-                          value={r.houseStatus}
-                          onChange={(e) =>
-                            setStatus(r.id, e.target.value as HouseStatus)
-                          }
-                        >
-                          {STATUSES.map((s) => (
-                            <option key={s.value} value={s.value}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="fh-btn"
-                          onClick={() => onRemove(r.id)}
-                          disabled={tablePending}
-                        >
-                          Remove
-                        </button>
-                      </td>
+            <>
+              {/* Phone layout: stacked cards. Easier to tap status + remove. */}
+              <div className="space-y-2 sm:hidden">
+                {rows.map((r) => (
+                  <div
+                    key={r.id}
+                    className="p-3 bg-fh-white border-2 border-fh-green rounded space-y-2"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-semibold">
+                        {r.firstName} {r.lastName}
+                      </span>
+                      <span className="font-mono text-sm">{r.id}</span>
+                    </div>
+                    <select
+                      className="fh-select"
+                      value={r.houseStatus}
+                      onChange={(e) =>
+                        setStatus(r.id, e.target.value as HouseStatus)
+                      }
+                    >
+                      {STATUSES.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="fh-btn w-full"
+                      onClick={() => onRemove(r.id)}
+                      disabled={tablePending}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tablet / desktop layout: original table. */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="fh-table">
+                  <thead>
+                    <tr>
+                      <th>First</th>
+                      <th>Last</th>
+                      <th>ID</th>
+                      <th>Status</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {rows.map((r) => (
+                      <tr key={r.id}>
+                        <td>{r.firstName}</td>
+                        <td>{r.lastName}</td>
+                        <td>{r.id}</td>
+                        <td>
+                          <select
+                            className="fh-select"
+                            value={r.houseStatus}
+                            onChange={(e) =>
+                              setStatus(r.id, e.target.value as HouseStatus)
+                            }
+                          >
+                            {STATUSES.map((s) => (
+                              <option key={s.value} value={s.value}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="fh-btn"
+                            onClick={() => onRemove(r.id)}
+                            disabled={tablePending}
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </section>

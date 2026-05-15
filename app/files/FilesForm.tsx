@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { lookupMemberById } from "@/app/_actions/lookup";
 
-export function FilesForm() {
+interface Props {
+  // LAN URL of the in-house file server, e.g. http://192.168.1.153:8080/.
+  // Comes from FILES_LAN_URL env var via the parent server component.
+  filesUrl: string;
+}
+
+export function FilesForm({ filesUrl }: Props) {
   const [id, setId] = useState("");
   const [state, setState] = useState<
     | { kind: "idle" }
@@ -18,6 +24,16 @@ export function FilesForm() {
     const res = await lookupMemberById(id);
     if (res.ok) setState({ kind: "ok", name: res.fullName });
     else setState({ kind: "err", msg: res.error });
+  }
+
+  // Pull the host:port out of the URL for the display label, falling back
+  // gracefully if the env value isn't a parseable URL.
+  let displayHost = filesUrl;
+  try {
+    const u = new URL(filesUrl);
+    displayHost = u.host;
+  } catch {
+    /* keep raw string */
   }
 
   return (
@@ -46,10 +62,10 @@ export function FilesForm() {
           </p>
           <p>
             <a
-              href="http://192.168.1.153:8080/"
+              href={filesUrl}
               className="underline font-semibold hover:text-[var(--fh-gold)]"
             >
-              Open Files (192.168.1.153:8080)
+              Open Files ({displayHost})
             </a>
           </p>
           <p className="text-sm">
