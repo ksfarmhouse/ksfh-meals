@@ -29,7 +29,7 @@ export type LoginState = { ok: false; error: string } | null;
 // attempt to a different Lambda instance with its own counter, so this
 // isn't a hard ceiling, just extra friction.
 const FAIL_DELAY_MS = 1000;
-const LOCKOUT_THRESHOLD = 10;
+const LOCKOUT_THRESHOLD = 5;
 const LOCKOUT_WINDOW_MS = 5 * 60 * 1000;
 const LOCKOUT_MS = 5 * 60 * 1000;
 
