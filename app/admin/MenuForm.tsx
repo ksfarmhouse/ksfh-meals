@@ -85,7 +85,7 @@ export function MenuForm({ initialLunch, initialDinner }: Props) {
         </table>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <button type="submit" className="fh-btn" disabled={pending}>
           {pending ? "Saving..." : "Save Menu"}
         </button>
