@@ -19,8 +19,6 @@
 // counts) iterate just the relevant slots without recomputing the layout.
 
 export const SLOT_COUNT = 12;
-export const LUNCH_COUNT = 7;
-export const DINNER_COUNT = 5;
 
 export const MEAL_VALUES = {
   In: 0,
@@ -29,13 +27,6 @@ export const MEAL_VALUES = {
   Late: 3,
 } as const;
 
-export const MEAL_LABEL: Record<number, "In" | "Out" | "Early" | "Late"> = {
-  0: "In",
-  1: "Out",
-  2: "Early",
-  3: "Late",
-};
-
 export const MEAL_OPTIONS: Array<{ value: number; label: string }> = [
   { value: 0, label: "In" },
   { value: 1, label: "Out" },
@@ -43,9 +34,8 @@ export const MEAL_OPTIONS: Array<{ value: number; label: string }> = [
   { value: 3, label: "Late" },
 ];
 
-// Day labels for the plates page and table headers.
+// Day labels for table headers and the plates day picker.
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
-export const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 export const DAY_PICKER = ["M", "T", "W", "TH", "F", "SA", "SU"] as const;
 
 // Slot indexes

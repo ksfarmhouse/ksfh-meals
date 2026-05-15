@@ -29,9 +29,8 @@ npm install
 cp .env.example .env
 # Fill in DATABASE_URL, DIRECT_URL, ADMIN_PASSWORD, SESSION_SECRET (see below).
 
-# 3. Migrate + seed
-npx prisma migrate dev          # creates tables in Supabase
-npx prisma db seed              # inserts the placeholder Menu row (idempotent)
+# 3. Push schema + seed (idempotent — safe to re-run)
+npm run db:recover              # creates tables + placeholder Menu row
 
 # 4. Run
 npm run dev
@@ -51,8 +50,9 @@ row only when one is not already present.
    - **Direct connection** (port `5432`) → paste into `DIRECT_URL`. Prisma
      uses this for `prisma migrate` only.
 4. Replace `<password>` in both strings with your DB password.
-5. Run `npx prisma migrate dev` against your dev `.env` once — that creates the
-   `Member` and `Menu` tables in Supabase.
+5. Run `npm run db:recover` against your dev `.env` once — that pushes the
+   schema (creating the `Member` and `Menu` tables) and seeds the placeholder
+   Menu row.
 
 ## Deploy to Vercel
 
@@ -71,9 +71,9 @@ Either way, **all data lives in Supabase Postgres**, never in the Vercel
 filesystem, so every redeploy preserves member and menu data.
 
 The `build` script runs `prisma generate` first so the Prisma client is always
-up to date on Vercel. Migrations are not run automatically on deploy — apply
-them locally with `npx prisma migrate deploy` against the prod connection
-string when schema changes ship.
+up to date on Vercel. Schema changes are applied with `npm run db:recover`
+(which uses `prisma db push`); the guardrail inside the recover script keeps
+that command from clobbering a populated database.
 
 ## DNS (GoDaddy → Vercel)
 
