@@ -6,7 +6,7 @@
 
 import { z } from "zod";
 import { prisma } from "@/app/_lib/prisma";
-import { isQuotaEditable } from "@/app/_lib/meals";
+import { healthyAvailableFor, isQuotaEditable } from "@/app/_lib/meals";
 
 const IdSchema = z.string().trim().length(4, "ID must be 4 characters");
 
@@ -22,6 +22,8 @@ export type MemberPlanResult =
       healthyQuota: number;
       defaultHealthyQuota: number;
       healthySlots: number[];
+      // False while the chicken option is limited to HEALTHY_PREVIEW_IDS.
+      healthyAvailable: boolean;
       // Free-text allergies, edited on /default-plan.
       allergens: string;
       // The allowance is set on Sunday and read-only Mon–Sat. Decided on the
@@ -58,6 +60,7 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
     healthyQuota: m.healthyQuota,
     defaultHealthyQuota: m.defaultHealthyQuota,
     healthySlots: m.healthySlots,
+    healthyAvailable: healthyAvailableFor(m.id),
     allergens: m.allergens ?? "",
     quotaEditable: isQuotaEditable(),
   };

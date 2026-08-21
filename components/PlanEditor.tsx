@@ -33,6 +33,7 @@ export function PlanEditor({ mode }: Props) {
     healthySlots: number[];
     standingQuota: number;
     allergens: string;
+    healthyAvailable: boolean;
     quotaEditable: boolean;
   } | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export function PlanEditor({ mode }: Props) {
       // and will reset to 0 at the next rollover.
       standingQuota: res.defaultHealthyQuota,
       allergens: res.allergens,
+      healthyAvailable: res.healthyAvailable,
       quotaEditable: res.quotaEditable,
     });
   }
@@ -113,6 +115,7 @@ export function PlanEditor({ mode }: Props) {
         initialHealthyQuota={member.healthyQuota}
         initialHealthySlots={member.healthySlots}
         allowHealthySlots={mode === "weekly"}
+        healthyAvailable={member.healthyAvailable}
         initialAllergens={member.allergens}
         showAllergens={mode === "default"}
         standingQuota={member.standingQuota}
@@ -120,7 +123,7 @@ export function PlanEditor({ mode }: Props) {
         saveAction={mode === "weekly" ? saveWeeklyPlan : saveDefaultPlan}
         planLabel={mode === "weekly" ? "this week's plan" : "default plan"}
       />
-      <MealStatusLegend />
+      <MealStatusLegend showHealthy={member.healthyAvailable} />
     </div>
   );
 }

@@ -2,7 +2,13 @@
 // for the healthy (chicken) option.
 // Shown under the meal-plan editor on /this-week and /default-plan.
 
-export function MealStatusLegend() {
+interface Props {
+  // Hidden while the chicken option is limited to HEALTHY_PREVIEW_IDS, so the
+  // legend doesn't describe something the reader has no controls for.
+  showHealthy: boolean;
+}
+
+export function MealStatusLegend({ showHealthy }: Props) {
   return (
     <div className="mt-6 p-4 bg-fh-white border-2 border-fh-green rounded">
       <ul className="text-sm space-y-1">
@@ -18,6 +24,7 @@ export function MealStatusLegend() {
         <li>
           <strong>Late</strong> — late plate
         </li>
+        {showHealthy && (
         <li>
           <strong>chicken</strong> — swaps the main dish for chicken. You&rsquo;re
           still at the meal, so it works with Early and Late too. Pick how many
@@ -27,6 +34,7 @@ export function MealStatusLegend() {
           fixed for the rest of the week — you can still choose which meals to
           spend it on any day.
         </li>
+        )}
       </ul>
     </div>
   );

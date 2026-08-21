@@ -178,8 +178,18 @@ Three `Member` fields drive it:
 | `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
 | `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
 
-Everyone gets it, new members included. One gate sits on top of it, enforced
-server-side in `app/_actions/plans.ts` rather than by hiding controls:
+**Currently in preview.** `HEALTHY_PREVIEW_IDS` in `app/_lib/meals.ts` limits the
+whole feature to a list of member IDs while it's still being built out.
+Everyone else sees no chicken controls, no legend entry, and the server pins
+their quota and slots to 0 no matter what the browser posts. `/plates` shows
+the chicken card only when someone actually has a swap flagged, so the house
+sees no trace of it until it's in real use.
+
+**To launch it to the whole house, set `HEALTHY_PREVIEW_IDS = null`.** That one
+change re-enables everything; nothing else needs touching.
+
+Two more gates sit on top of it, both enforced server-side in
+`app/_actions/plans.ts` rather than by hiding controls:
 
 - **The number is recorded Sunday.** `isQuotaEditable()` is true only on Sunday
   in `America/Chicago` (`HOUSE_TIME_ZONE`) — resolved in the house's zone

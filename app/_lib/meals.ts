@@ -25,7 +25,8 @@
 // Each member gets a weekly allowance (healthyQuota) and spends it on
 // individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
 // The allowance itself is set on Sunday and read-only the rest of the week
-// (isQuotaEditable).
+// (isQuotaEditable), and the whole feature is currently limited to the member
+// IDs in HEALTHY_PREVIEW_IDS while it's still being built out.
 
 export const SLOT_COUNT = 12;
 
@@ -88,6 +89,20 @@ export function normalizeHealthySlots(
 // How many swaps the member has left to spend this week.
 export function healthyRemaining(quota: number, slots: number[]): number {
   return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
+}
+
+// PREVIEW GATE ------------------------------------------------------------
+// The healthy (chicken) option is still being worked on, so it's limited to
+// these member IDs. Everyone else sees no chicken controls at all, and the
+// server refuses to store a quota for them (app/_actions/plans.ts) — hiding
+// the UI alone wouldn't stop anyone who knows how to post to the action.
+//
+// To open it up to the whole house again, set this to null. That single
+// change re-enables the feature everywhere; nothing else needs touching.
+export const HEALTHY_PREVIEW_IDS: readonly string[] | null = ["1327"];
+
+export function healthyAvailableFor(memberId: string): boolean {
+  return HEALTHY_PREVIEW_IDS === null || HEALTHY_PREVIEW_IDS.includes(memberId);
 }
 
 // The house is in Kansas; Vercel runs in UTC. Resolving the weekday in the

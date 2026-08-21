@@ -46,6 +46,9 @@ interface Props {
   // /this-week shows the per-meal checkboxes; /default-plan shows only the number.
   allowHealthySlots: boolean;
   initialAllergens: string;
+  // False while the chicken option is limited to HEALTHY_PREVIEW_IDS — the
+  // box and the per-meal checkboxes disappear entirely.
+  healthyAvailable: boolean;
   // Allergies are owned by /default-plan, so the box only renders there.
   showAllergens: boolean;
   // The member's standing number. On This Week, a 0 here means whatever they
@@ -63,6 +66,7 @@ export function MealPlanTable({
   initialPlan,
   initialHealthyQuota,
   initialHealthySlots,
+  healthyAvailable,
   initialAllergens,
   showAllergens,
   allowHealthySlots,
@@ -149,7 +153,8 @@ export function MealPlanTable({
   // eligible slots. The checkbox is disabled when the member isn't eating that
   // meal, or when they're out of swaps and this one isn't already checked.
   function slotCell(slot: number) {
-    const eligible = allowHealthySlots && isHealthyEligible(slot);
+    const eligible =
+      healthyAvailable && allowHealthySlots && isHealthyEligible(slot);
     const checked = healthy.includes(slot);
     const isOut = plan[slot] === MEAL_VALUES.Out;
     return (
@@ -189,6 +194,7 @@ export function MealPlanTable({
         <span className="font-semibold">{memberName}</span> (ID {memberId})
       </p>
 
+      {healthyAvailable && (
       <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
         <label className="flex flex-wrap items-center gap-2">
           <span className="font-semibold">
@@ -242,6 +248,7 @@ export function MealPlanTable({
           that&rsquo;s what the kitchen shops against.
         </p>
       </div>
+      )}
 
       {showAllergens && (
         <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">

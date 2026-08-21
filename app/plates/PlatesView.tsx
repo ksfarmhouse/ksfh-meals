@@ -4,6 +4,11 @@
 //   - how many signed up "Late"          — name list on the Late card
 //   - how many signed up "In"            — used as the "set for N members"
 //                                          number on the Early card
+// The chicken card and its count only render when someone actually has a
+// chicken swap flagged for that meal. While the option is in preview (see
+// HEALTHY_PREVIEW_IDS) that means the house sees no trace of it, and it
+// reappears on its own once it's in real use.
+//
 // An Allergens panel sits above the day picker, listing every member who has
 // entered allergies. It is intentionally day-independent — the cook should see
 // it on every visit.
@@ -156,15 +161,19 @@ export function PlatesView({ members }: Props) {
               extra={
                 <>
                   <div>Set for {view.inAtDinner} Members</div>
-                  <div>
-                    {view.chickenDinner.length} chicken plate
-                    {view.chickenDinner.length === 1 ? "" : "s"}
-                  </div>
+                  {view.chickenDinner.length > 0 && (
+                    <div>
+                      {view.chickenDinner.length} chicken plate
+                      {view.chickenDinner.length === 1 ? "" : "s"}
+                    </div>
+                  )}
                 </>
               }
             />
             <PlateCard title="Late Dinner" names={view.lateDinner} />
-            <PlateCard title="Chicken Dinner" names={view.chickenDinner} />
+            {view.chickenDinner.length > 0 && (
+              <PlateCard title="Chicken Dinner" names={view.chickenDinner} />
+            )}
           </>
         )}
       </div>
