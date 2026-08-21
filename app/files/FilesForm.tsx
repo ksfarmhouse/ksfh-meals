@@ -3,17 +3,15 @@
 import { useState } from "react";
 import { lookupMemberById } from "@/app/_actions/lookup";
 
-interface Props {
-  // LAN URL of the in-house file server, e.g. http://192.168.1.153:8080/.
-  // Comes from FILES_LAN_URL env var via the parent server component.
-  filesUrl: string;
-}
-
-export function FilesForm({ filesUrl }: Props) {
+// The file-server URL is NOT a prop. It arrives from lookupMemberById only
+// after the entered ID clears the check — a URL passed in from the server
+// component would be sitting in the public page source, readable without
+// entering an ID at all.
+export function FilesForm() {
   const [id, setId] = useState("");
   const [state, setState] = useState<
     | { kind: "idle" }
-    | { kind: "ok"; name: string }
+    | { kind: "ok"; name: string; filesUrl: string }
     | { kind: "err"; msg: string }
     | { kind: "pending" }
   >({ kind: "idle" });
@@ -22,18 +20,18 @@ export function FilesForm({ filesUrl }: Props) {
     e.preventDefault();
     setState({ kind: "pending" });
     const res = await lookupMemberById(id);
-    if (res.ok) setState({ kind: "ok", name: res.fullName });
+    if (res.ok) setState({ kind: "ok", name: res.fullName, filesUrl: res.filesUrl });
     else setState({ kind: "err", msg: res.error });
   }
 
   // Pull the host:port out of the URL for the display label, falling back
-  // gracefully if the env value isn't a parseable URL.
-  let displayHost = filesUrl;
-  try {
-    const u = new URL(filesUrl);
-    displayHost = u.host;
-  } catch {
-    /* keep raw string */
+  // gracefully if the value isn't a parseable URL.
+  function hostOf(url: string): string {
+    try {
+      return new URL(url).host;
+    } catch {
+      return url;
+    }
   }
 
   return (
@@ -62,10 +60,10 @@ export function FilesForm({ filesUrl }: Props) {
           </p>
           <p>
             <a
-              href={filesUrl}
+              href={state.filesUrl}
               className="underline font-semibold hover:text-[var(--fh-gold)]"
             >
-              Open Files ({displayHost})
+              Open Files ({hostOf(state.filesUrl)})
             </a>
           </p>
           <p className="text-sm">

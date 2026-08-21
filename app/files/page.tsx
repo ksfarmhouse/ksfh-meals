@@ -1,10 +1,10 @@
 // /files — ID-gated link to the in-house file server.
-// The actual URL lives in the FILES_LAN_URL env var (validated in
-// app/_lib/env.ts, defaulted to http://192.168.1.153:8080/) so the IP
-// can change without a code edit + redeploy.
+//
+// The URL lives in the FILES_LAN_URL env var (validated in app/_lib/env.ts)
+// and is deliberately NOT rendered here. It's returned by lookupMemberById
+// once the entered ID clears, so it never appears in the public page source.
 
 import { FilesForm } from "./FilesForm";
-import { env } from "@/app/_lib/env";
 
 export default function FilesPage() {
   return (
@@ -13,7 +13,7 @@ export default function FilesPage() {
       <p className="mb-4 text-sm">
         Enter your member ID to reveal the link to the in-house files server.
       </p>
-      <FilesForm filesUrl={env.FILES_LAN_URL} />
+      <FilesForm />
     </div>
   );
 }

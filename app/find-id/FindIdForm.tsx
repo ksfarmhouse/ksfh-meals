@@ -20,6 +20,16 @@ export function FindIdForm() {
           required
         />
       </label>
+      <label className="block">
+        <span className="block mb-1 font-semibold">House Password</span>
+        <input
+          name="password"
+          type="password"
+          className="fh-input"
+          autoComplete="off"
+          required
+        />
+      </label>
       <button type="submit" className="fh-btn" disabled={pending}>
         {pending ? "Looking up..." : "Find ID"}
       </button>
