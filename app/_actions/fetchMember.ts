@@ -6,7 +6,7 @@
 
 import { z } from "zod";
 import { prisma } from "@/app/_lib/prisma";
-import { healthyAvailableFor, isQuotaEditable } from "@/app/_lib/meals";
+import { isQuotaEditable } from "@/app/_lib/meals";
 
 const IdSchema = z.string().trim().length(4, "ID must be 4 characters");
 
@@ -22,8 +22,6 @@ export type MemberPlanResult =
       healthyQuota: number;
       defaultHealthyQuota: number;
       healthySlots: number[];
-      // New members don't get the healthy option until after initiation.
-      healthyAvailable: boolean;
       // The allowance is set on Sunday and read-only Mon–Sat. Decided on the
       // server so the browser can't just claim it's Sunday.
       quotaEditable: boolean;
@@ -45,7 +43,6 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
       healthyQuota: true,
       defaultHealthyQuota: true,
       healthySlots: true,
-      houseStatus: true,
     },
   });
   if (!m) return { ok: false, error: "Member not found" };
@@ -58,7 +55,6 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
     healthyQuota: m.healthyQuota,
     defaultHealthyQuota: m.defaultHealthyQuota,
     healthySlots: m.healthySlots,
-    healthyAvailable: healthyAvailableFor(m.houseStatus),
     quotaEditable: isQuotaEditable(),
   };
 }

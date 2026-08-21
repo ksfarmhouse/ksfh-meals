@@ -25,8 +25,7 @@
 // Each member gets a weekly allowance (healthyQuota) and spends it on
 // individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
 // The allowance itself is set on Sunday and read-only the rest of the week
-// (isQuotaEditable), and new members don't get it at all
-// (healthyAvailableFor).
+// (isQuotaEditable).
 
 export const SLOT_COUNT = 12;
 
@@ -89,12 +88,6 @@ export function normalizeHealthySlots(
 // How many swaps the member has left to spend this week.
 export function healthyRemaining(quota: number, slots: number[]): number {
   return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
-}
-
-// New members don't get the healthy option until after initiation, so the
-// controls are hidden for them and the server refuses to store a quota.
-export function healthyAvailableFor(status: string): boolean {
-  return status !== "NewMember";
 }
 
 // The house is in Kansas; Vercel runs in UTC. Resolving the weekday in the

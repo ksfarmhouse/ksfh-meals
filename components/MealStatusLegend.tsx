@@ -25,7 +25,7 @@ export function MealStatusLegend() {
           Friday dinner is leftovers, so it and the weekends aren&rsquo;t
           eligible. Your number is recorded <strong>Sunday</strong> and is
           fixed for the rest of the week — you can still choose which meals to
-          spend it on any day. New members get this after initiation.
+          spend it on any day.
         </li>
       </ul>
     </div>

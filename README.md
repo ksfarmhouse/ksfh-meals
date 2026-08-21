@@ -178,14 +178,9 @@ Three `Member` fields drive it:
 | `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
 | `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
 
-Two gates sit on top of it, both enforced server-side in
-`app/_actions/plans.ts` rather than by hiding controls:
+Everyone gets it, new members included. One gate sits on top of it, enforced
+server-side in `app/_actions/plans.ts` rather than by hiding controls:
 
-- **New members don't get it.** `healthyAvailableFor(status)` is false for
-  `NewMember`; the editor shows an "opens up after initiation" note instead of
-  the controls, and both save actions force the quota to 0 regardless of what
-  the browser sends. `updateMemberStatuses` also clears the fields when someone
-  is moved *to* `NewMember`.
 - **The number is recorded Sunday.** `isQuotaEditable()` is true only on Sunday
   in `America/Chicago` (`HOUSE_TIME_ZONE`) — resolved in the house's zone
   because Vercel runs in UTC, and a naive UTC check would flip the window six
