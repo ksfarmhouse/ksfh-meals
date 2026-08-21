@@ -90,7 +90,9 @@ export async function lookupMemberById(id: string): Promise<LookupIdResult> {
   if (!m) return { ok: false, error: "User not found" };
 
   if (!FILES_OPEN_TO_NEW_MEMBERS && m.houseStatus === "NewMember") {
-    return { ok: false, error: "Files access opens up after initiation." };
+    // Deliberately vague — it doesn't announce that the reason is being a
+    // new member, so the message isn't a way to probe someone's status.
+    return { ok: false, error: "Cannot access files at this time." };
   }
 
   return { ok: true, id: m.id, fullName: m.fullName, filesUrl: env.FILES_LAN_URL };
