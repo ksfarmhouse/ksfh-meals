@@ -16,6 +16,11 @@ export type MemberPlanResult =
       fullName: string;
       weeklyPlan: number[];
       defaultPlan: number[];
+      // Healthy (chicken) option: this week's allowance and which slots it's
+      // been spent on, plus the standing number restored at each rollover.
+      healthyQuota: number;
+      defaultHealthyQuota: number;
+      healthySlots: number[];
     }
   | { ok: false; error: string };
 
@@ -26,7 +31,15 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
   }
   const m = await prisma.member.findUnique({
     where: { id: parsed.data },
-    select: { id: true, fullName: true, weeklyPlan: true, defaultPlan: true },
+    select: {
+      id: true,
+      fullName: true,
+      weeklyPlan: true,
+      defaultPlan: true,
+      healthyQuota: true,
+      defaultHealthyQuota: true,
+      healthySlots: true,
+    },
   });
   if (!m) return { ok: false, error: "Member not found" };
   return {
@@ -35,5 +48,8 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
     fullName: m.fullName,
     weeklyPlan: m.weeklyPlan,
     defaultPlan: m.defaultPlan,
+    healthyQuota: m.healthyQuota,
+    defaultHealthyQuota: m.defaultHealthyQuota,
+    healthySlots: m.healthySlots,
   };
 }

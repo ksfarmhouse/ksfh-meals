@@ -131,6 +131,11 @@ export async function updateMemberStatuses(
               houseStatus: u.houseStatus,
               weeklyPlan: plan,
               defaultPlan: plan,
+              // Their healthy (chicken) allowance goes with the plan reset —
+              // a stale quota shouldn't survive a move in or out of the house.
+              healthyQuota: 0,
+              defaultHealthyQuota: 0,
+              healthySlots: [],
             },
           });
         }

@@ -46,6 +46,18 @@ model Member {
   weeklyPlan  Int[]
   defaultPlan Int[]
 
+  // Healthy (chicken) option — swaps the main dish for chicken at a meal the
+  // member is still attending. Eligible meals are slots 0–8 (Mon lunch … Fri
+  // lunch); Friday dinner is leftovers and Sat/Sun aren't weekday meals, so 9
+  // is the weekly max.
+  //
+  // healthySlots holds slot INDEXES (e.g. [3, 7]), not a parallel 12-length
+  // array. That keeps no array length load-bearing here — see the note in
+  // README.md about padding the fixed-length plan arrays.
+  healthyQuota        Int   @default(0)  // swaps allowed this week (0–9)
+  defaultHealthyQuota Int   @default(0)  // standing number, restored at rollover
+  healthySlots        Int[] @default([]) // slots spent so far this week
+
   @@index([fullName])
   @@index([houseStatus])
 }

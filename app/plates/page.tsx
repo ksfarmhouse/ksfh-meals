@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function PlatesPage() {
   const members = await prisma.member.findMany({
-    select: { id: true, fullName: true, weeklyPlan: true },
+    select: { id: true, fullName: true, weeklyPlan: true, healthySlots: true },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
   });
 

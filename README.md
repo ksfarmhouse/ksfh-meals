@@ -163,6 +163,44 @@ titles use `.fh-page-title` (3px gold underline). Buttons use `.fh-btn` (green
 → gold on hover). Navbar uses `.fh-pill` / `.fh-pill-active`. Tables use
 `.fh-table` (centered cells by default; add `fh-table-left` for the roster).
 
+## Healthy (chicken) option
+
+Members can have the main dish swapped for chicken at some of their meals. It's
+a **swap, not a skip** — they're still at the meal, so it's independent of
+In/Out/Early/Late (you can be Late *and* chicken) and it does **not** change
+out-of-house billing at rollover.
+
+Three `Member` fields drive it:
+
+| Field | Meaning |
+| --- | --- |
+| `healthyQuota` | How many swaps this member gets **this week** (0–9). |
+| `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
+| `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
+
+Eligible meals are slots **0–8** (Mon lunch … Fri lunch) — `HEALTHY_SLOTS` in
+`app/_lib/meals.ts`. Friday dinner (slot 9) is leftovers night, and Sat/Sun
+lunch (10, 11) aren't weekday meals, so the weekly max is 9.
+
+Where each piece lives:
+
+- **Rules** — `app/_lib/meals.ts`: `HEALTHY_SLOTS`, `MAX_HEALTHY`,
+  `isHealthyEligible`, `normalizeHealthySlots`, `healthyRemaining`. Both the
+  editor and the server action call these, so they can't disagree.
+- **Editing** — `/default-plan` sets only the standing *number* (which meals get
+  swapped is decided day-of, so there's nothing per-slot to store). `/this-week`
+  shows the number **and** a checkbox per eligible meal.
+- **Enforcement** — `app/_actions/plans.ts` re-normalizes whatever the browser
+  sent and rejects an over-quota save. The disabled checkboxes are convenience,
+  not the gate.
+- **Kitchen** — `/plates` shows a Chicken Lunch / Chicken Dinner card plus a
+  chicken-plate count on the set-for line.
+
+> `healthySlots` is deliberately an index list rather than a parallel
+> 12-length array. No array length is load-bearing, so adding the column needed
+> no backfill — contrast the padding warning under *Change the meal slot layout*
+> below.
+
 ## Extending the app
 
 Common changes and where to make them:
@@ -205,6 +243,9 @@ Steps if you ever need to:
 4. Run a one-shot script that pads each member's `weeklyPlan` and
    `defaultPlan` arrays to the new length before deploying — otherwise
    every page that reads `plan[newIndex]` will get `undefined`.
+5. Revisit `HEALTHY_SLOTS` / `MAX_HEALTHY` in `app/_lib/meals.ts` — they name
+   slot indexes too, and `MAX_HEALTHY` is the cap the editor and
+   `app/_actions/plans.ts` validate against.
 
 ### Add a new page
 1. Create `app/<slug>/page.tsx`. Server Component by default; add

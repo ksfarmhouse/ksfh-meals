@@ -17,6 +17,13 @@
 //
 // LUNCH_SLOTS / DINNER_SLOTS below let other code (rollover billing, plate
 // counts) iterate just the relevant slots without recomputing the layout.
+//
+// Separately from that value, a member can flag a meal for the HEALTHY
+// (chicken) option — chicken replaces the main dish at a meal they're still
+// attending. It's a swap, not a skip, so it's independent of In/Out/Early/Late
+// (you can be Late *and* chicken) and doesn't change out-of-house billing.
+// Each member gets a weekly allowance (healthyQuota) and spends it on
+// individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
 
 export const SLOT_COUNT = 12;
 
@@ -48,6 +55,37 @@ export function lunchSlotForDay(dayIdx: number): number {
 }
 export function dinnerSlotForDay(dayIdx: number): number | null {
   return dayIdx < 5 ? DINNER_SLOTS[dayIdx] : null;
+}
+
+// Meals eligible for the healthy (chicken) swap: every weekday meal EXCEPT
+// Friday dinner (slot 9), which is leftovers night. Sat/Sun lunch (10, 11)
+// aren't weekday meals. That leaves exactly 9 slots — hence the weekly max.
+export const HEALTHY_SLOTS = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const;
+export const MAX_HEALTHY = HEALTHY_SLOTS.length; // 9
+
+export function isHealthyEligible(slot: number): boolean {
+  return (HEALTHY_SLOTS as readonly number[]).includes(slot);
+}
+
+// Cleans up a set of healthy-flagged slots so the client editor and the server
+// action can't disagree about what's allowed. Drops ineligible slots,
+// duplicates, and any slot marked Out (you can't swap a meal you aren't
+// eating), sorts them, then trims to the quota (keeping the earliest meals).
+export function normalizeHealthySlots(
+  slots: number[],
+  plan: number[],
+  quota: number,
+): number[] {
+  const cleaned = Array.from(new Set(slots))
+    .filter((s) => isHealthyEligible(s) && plan[s] !== MEAL_VALUES.Out)
+    .sort((a, b) => a - b);
+  const cap = Math.max(0, Math.min(quota, MAX_HEALTHY));
+  return cleaned.slice(0, cap);
+}
+
+// How many swaps the member has left to spend this week.
+export function healthyRemaining(quota: number, slots: number[]): number {
+  return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
 }
 
 export function emptyPlan(fillValue: number): number[] {

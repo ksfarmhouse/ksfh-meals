@@ -1,4 +1,5 @@
-// Reference card explaining what In / Out / Early / Late mean.
+// Reference card explaining what In / Out / Early / Late mean, plus the rules
+// for the healthy (chicken) option.
 // Shown under the meal-plan editor on /this-week and /default-plan.
 
 export function MealStatusLegend() {
@@ -16,6 +17,13 @@ export function MealStatusLegend() {
         </li>
         <li>
           <strong>Late</strong> — late plate
+        </li>
+        <li>
+          <strong>chicken</strong> — swaps the main dish for chicken. You&rsquo;re
+          still at the meal, so it works with Early and Late too. Pick how many
+          you want each week (up to 9), then tick the meals you want on the day.
+          Friday dinner is leftovers, so it and the weekends aren&rsquo;t
+          eligible. Your allowance refills every week.
         </li>
       </ul>
     </div>

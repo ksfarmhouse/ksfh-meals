@@ -4,6 +4,8 @@
 //   - how many signed up "Late"          — name list on the Late card
 //   - how many signed up "In"            — used as the "set for N members"
 //                                          number on the Early card
+//   - who flagged the healthy (chicken) option — its own card, plus a count
+//     on the Early card so the cook knows how many chicken plates to make
 //
 // All work happens client-side over the array we got from the server
 // component, so flipping between days is instant.
@@ -23,6 +25,7 @@ export interface MemberForPlates {
   id: string;
   fullName: string;
   weeklyPlan: number[];
+  healthySlots: number[];
 }
 
 interface Props {
@@ -51,6 +54,20 @@ function countWith(
   );
 }
 
+// Everyone getting chicken at this meal. Guards on the plan value too: a
+// stale flag on a meal the member later marked Out shouldn't produce a plate.
+// This cuts across Early/Late/In, so it gets its own card rather than folding
+// into one of theirs.
+function healthyNames(members: MemberForPlates[], slot: number): string[] {
+  return members
+    .filter(
+      (m) =>
+        m.healthySlots.includes(slot) && m.weeklyPlan[slot] !== MEAL_VALUES.Out,
+    )
+    .map((m) => m.fullName)
+    .sort();
+}
+
 // Today's day-of-week, mapped to our index (0=Mon … 6=Sun).
 // JS Date.getDay() returns 0=Sun..6=Sat; we shift so Mon=0.
 function todayIndex(): number {
@@ -68,14 +85,17 @@ export function PlatesView({ members }: Props) {
     const earlyLunch = namesWith(members, lunchSlot, MEAL_VALUES.Early);
     const lateLunch = namesWith(members, lunchSlot, MEAL_VALUES.Late);
     const inAtLunch = countWith(members, lunchSlot, MEAL_VALUES.In);
+    const chickenLunch = healthyNames(members, lunchSlot);
 
     let earlyDinner: string[] = [];
     let lateDinner: string[] = [];
     let inAtDinner = 0;
+    let chickenDinner: string[] = [];
     if (dinnerSlot !== null) {
       earlyDinner = namesWith(members, dinnerSlot, MEAL_VALUES.Early);
       lateDinner = namesWith(members, dinnerSlot, MEAL_VALUES.Late);
       inAtDinner = countWith(members, dinnerSlot, MEAL_VALUES.In);
+      chickenDinner = healthyNames(members, dinnerSlot);
     }
 
     return {
@@ -85,6 +105,8 @@ export function PlatesView({ members }: Props) {
       lateDinner,
       inAtLunch,
       inAtDinner,
+      chickenLunch,
+      chickenDinner,
       hasDinner: dinnerSlot !== null,
     };
   }, [members, day]);
@@ -97,17 +119,35 @@ export function PlatesView({ members }: Props) {
         <PlateCard
           title="Early Lunch"
           names={view.earlyLunch}
-          extra={<div>Set for {view.inAtLunch} Members</div>}
+          extra={
+            <>
+              <div>Set for {view.inAtLunch} Members</div>
+              <div>
+                {view.chickenLunch.length} chicken plate
+                {view.chickenLunch.length === 1 ? "" : "s"}
+              </div>
+            </>
+          }
         />
         <PlateCard title="Late Lunch" names={view.lateLunch} />
+        <PlateCard title="Chicken Lunch" names={view.chickenLunch} />
         {view.hasDinner && (
           <>
             <PlateCard
               title="Early Dinner"
               names={view.earlyDinner}
-              extra={<div>Set for {view.inAtDinner} Members</div>}
+              extra={
+                <>
+                  <div>Set for {view.inAtDinner} Members</div>
+                  <div>
+                    {view.chickenDinner.length} chicken plate
+                    {view.chickenDinner.length === 1 ? "" : "s"}
+                  </div>
+                </>
+              }
             />
             <PlateCard title="Late Dinner" names={view.lateDinner} />
+            <PlateCard title="Chicken Dinner" names={view.chickenDinner} />
           </>
         )}
       </div>

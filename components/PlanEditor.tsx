@@ -3,6 +3,10 @@
 //   2. We fetch their member record, then render the MealPlanTable populated
 //      with the right plan array. They can save or switch to a different ID.
 //
+// The healthy (chicken) allowance follows the same split: weekly mode edits
+// this week's number and which meals it's spent on, default mode edits only
+// the standing number that refills it at rollover.
+//
 // The `mode` prop selects which field to read and which save action to use.
 
 "use client";
@@ -25,6 +29,8 @@ export function PlanEditor({ mode }: Props) {
     id: string;
     name: string;
     plan: number[];
+    healthyQuota: number;
+    healthySlots: number[];
   } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +50,11 @@ export function PlanEditor({ mode }: Props) {
       id: res.id,
       name: res.fullName,
       plan: mode === "weekly" ? res.weeklyPlan : res.defaultPlan,
+      // Weekly mode edits this week's allowance; default mode edits the
+      // standing number that refills it at each rollover.
+      healthyQuota:
+        mode === "weekly" ? res.healthyQuota : res.defaultHealthyQuota,
+      healthySlots: mode === "weekly" ? res.healthySlots : [],
     });
   }
 
@@ -91,6 +102,9 @@ export function PlanEditor({ mode }: Props) {
         memberId={member.id}
         memberName={member.name}
         initialPlan={member.plan}
+        initialHealthyQuota={member.healthyQuota}
+        initialHealthySlots={member.healthySlots}
+        allowHealthySlots={mode === "weekly"}
         saveAction={mode === "weekly" ? saveWeeklyPlan : saveDefaultPlan}
         planLabel={mode === "weekly" ? "this week's plan" : "default plan"}
       />

@@ -34,7 +34,12 @@ export type BulkResult = { ok: true; message: string } | { ok: false; error: str
 // itself doesn't touch money.
 //
 // After tallying, copies each member's permanent defaultPlan back into
-// their current weeklyPlan to prepare for the next week.
+// their current weeklyPlan to prepare for the next week, and refills their
+// healthy (chicken) allowance from defaultHealthyQuota.
+//
+// Note the billing loop below is deliberately blind to the healthy option: a
+// chicken meal is a swap, not a skip, so it's still an attended meal and still
+// billable.
 //
 // We bucket the increments by meal type (lunch vs dinner) using the
 // LUNCH_SLOTS / DINNER_SLOTS lookup sets from app/_lib/meals.ts so the
@@ -69,6 +74,10 @@ export async function rolloverMeals(): Promise<BulkResult> {
           weeklyPlan: m.defaultPlan,
           lunchesOwed: { increment: lunchInc },
           dinnersOwed: { increment: dinnerInc },
+          // Healthy (chicken) allowance is weekly: refill it from the
+          // member's standing number and clear the slots they spent it on.
+          healthyQuota: m.defaultHealthyQuota,
+          healthySlots: [],
         },
       });
     }),
@@ -101,6 +110,9 @@ export async function resetMeals(): Promise<BulkResult> {
           defaultPlan: plan,
           lunchesOwed: 0,
           dinnersOwed: 0,
+          healthyQuota: 0,
+          defaultHealthyQuota: 0,
+          healthySlots: [],
         },
       });
     }),
