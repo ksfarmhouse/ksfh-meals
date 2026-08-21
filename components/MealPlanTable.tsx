@@ -194,6 +194,22 @@ export function MealPlanTable({
         <span className="font-semibold">{memberName}</span> (ID {memberId})
       </p>
 
+      {/* Save sits ABOVE the tables on purpose: people were filling the form
+          in and leaving without pressing it, so it needs to be visible before
+          they start rather than parked below the fold. */}
+      <div className="flex items-center gap-3">
+        <button type="button" className="fh-btn" onClick={onSave} disabled={pending}>
+          {pending ? "Saving..." : "Save"}
+        </button>
+        {msg && <span className="font-semibold text-fh-green">{msg}</span>}
+        {err && <span className="font-semibold text-red-700">{err}</span>}
+      </div>
+
+      <p className="text-sm">
+        Changes aren&rsquo;t saved until you press{" "}
+        <span className="font-semibold">Save</span>.
+      </p>
+
       {healthyAvailable && (
       <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
         <label className="flex flex-wrap items-center gap-2">
@@ -308,13 +324,6 @@ export function MealPlanTable({
         </table>
       </div>
 
-      <div className="flex items-center gap-3">
-        <button type="button" className="fh-btn" onClick={onSave} disabled={pending}>
-          {pending ? "Saving..." : "Save"}
-        </button>
-        {msg && <span className="font-semibold text-fh-green">{msg}</span>}
-        {err && <span className="font-semibold text-red-700">{err}</span>}
-      </div>
     </div>
   );
 }
