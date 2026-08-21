@@ -23,6 +23,13 @@ import {
   healthyRemaining,
 } from "@/app/_lib/meals";
 
+// "" (a cleared box) and anything out of range both resolve to a usable number.
+function parseQuota(text: string): number {
+  if (text === "") return 0;
+  const n = Number(text);
+  return Number.isFinite(n) ? Math.max(0, Math.min(MAX_HEALTHY, n)) : 0;
+}
+
 export type SavePlanFn = (
   id: string,
   plan: number[],
@@ -37,6 +44,9 @@ interface Props {
   initialHealthySlots: number[];
   // /this-week shows the per-meal checkboxes; /default-plan shows only the number.
   allowHealthySlots: boolean;
+  // The member's standing number. On This Week, a 0 here means whatever they
+  // set is a one-week number that rollover will wipe.
+  standingQuota: number;
   // False Mon–Sat: the number is recorded on Sunday and fixed for the week.
   quotaEditable: boolean;
   saveAction: SavePlanFn;
@@ -50,6 +60,7 @@ export function MealPlanTable({
   initialHealthyQuota,
   initialHealthySlots,
   allowHealthySlots,
+  standingQuota,
   quotaEditable,
   saveAction,
   planLabel,
@@ -57,7 +68,11 @@ export function MealPlanTable({
   const [plan, setPlan] = useState<number[]>(
     initialPlan.length === SLOT_COUNT ? initialPlan : new Array(SLOT_COUNT).fill(0),
   );
-  const [quota, setQuota] = useState<number>(initialHealthyQuota);
+  // Held as text, not a number, so the member can clear the box and type a
+  // fresh value. An empty box counts as 0 everywhere the rules are applied,
+  // and snaps back to "0" once they click away.
+  const [quotaText, setQuotaText] = useState<string>(String(initialHealthyQuota));
+  const quota = parseQuota(quotaText);
   const [healthy, setHealthy] = useState<number[]>(
     normalizeHealthySlots(initialHealthySlots, initialPlan, initialHealthyQuota),
   );
@@ -93,12 +108,20 @@ export function MealPlanTable({
     clearFeedback();
   }
 
-  function setQuotaValue(raw: number) {
-    const q = Math.max(0, Math.min(MAX_HEALTHY, Number.isFinite(raw) ? raw : 0));
-    setQuota(q);
+  function setQuotaValue(raw: string) {
+    // Digits only, but keep "" so the box can sit empty mid-edit.
+    if (raw !== "" && !/^\d+$/.test(raw)) return;
+    const next =
+      raw === "" ? "" : String(Math.min(MAX_HEALTHY, Number(raw)));
+    setQuotaText(next);
     // Lowering the number below what's already spent trims the extra meals.
-    setHealthy((h) => normalizeHealthySlots(h, plan, q));
+    setHealthy((h) => normalizeHealthySlots(h, plan, parseQuota(next)));
     clearFeedback();
+  }
+
+  // Left the box empty — fall back to 0 the same as if they'd typed it.
+  function fillBlankQuota() {
+    if (quotaText === "") setQuotaText("0");
   }
 
   function onSave() {
@@ -170,8 +193,9 @@ export function MealPlanTable({
               min={0}
               max={MAX_HEALTHY}
               className="fh-input w-20"
-              value={quota}
-              onChange={(e) => setQuotaValue(Number(e.target.value))}
+              value={quotaText}
+              onChange={(e) => setQuotaValue(e.target.value)}
+              onBlur={fillBlankQuota}
             />
           )}
           <span className="text-sm">of {MAX_HEALTHY} max</span>
@@ -192,6 +216,13 @@ export function MealPlanTable({
             </>
           )}
         </p>
+        {allowHealthySlots && standingQuota === 0 && quota > 0 && (
+          <p className="mt-2 text-sm">
+            Heads up — this is a <span className="font-semibold">one-week</span>{" "}
+            number. Set it on <span className="font-semibold">Default Plan</span>{" "}
+            to get it automatically every week instead.
+          </p>
+        )}
         <p className="mt-2 text-sm">
           Your number is recorded{" "}
           <span className="font-semibold">Sunday</span>{" "}

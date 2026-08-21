@@ -107,9 +107,17 @@ export function houseDayOfWeek(now: Date = new Date()): number {
 
 // The chicken number is recorded on Sunday: whatever it says at the end of
 // Sunday is the allowance for the coming week, which is what the kitchen
-// shops against. Mon–Sat it's read-only — members can still SPEND it on
-// individual meals, they just can't change how many they get.
+// shops against. When the lock is on, Mon–Sat the number is read-only —
+// members can still SPEND it on individual meals, they just can't change how
+// many they get.
+//
+// The lock is OFF for now while the house gets used to the feature. Flip this
+// to true to turn it back on; everything else (the server check in plans.ts,
+// the read-only display, the "locked until Sunday" note) is already wired up.
+export const QUOTA_LOCK_ENABLED = false;
+
 export function isQuotaEditable(now: Date = new Date()): boolean {
+  if (!QUOTA_LOCK_ENABLED) return true;
   return houseDayOfWeek(now) === 0; // Sunday
 }
 
