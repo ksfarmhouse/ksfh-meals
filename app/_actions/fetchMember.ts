@@ -22,6 +22,8 @@ export type MemberPlanResult =
       healthyQuota: number;
       defaultHealthyQuota: number;
       healthySlots: number[];
+      // Free-text allergies, edited on /default-plan.
+      allergens: string;
       // The allowance is set on Sunday and read-only Mon–Sat. Decided on the
       // server so the browser can't just claim it's Sunday.
       quotaEditable: boolean;
@@ -43,6 +45,7 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
       healthyQuota: true,
       defaultHealthyQuota: true,
       healthySlots: true,
+      allergens: true,
     },
   });
   if (!m) return { ok: false, error: "Member not found" };
@@ -55,6 +58,7 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
     healthyQuota: m.healthyQuota,
     defaultHealthyQuota: m.defaultHealthyQuota,
     healthySlots: m.healthySlots,
+    allergens: m.allergens ?? "",
     quotaEditable: isQuotaEditable(),
   };
 }

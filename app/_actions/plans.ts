@@ -1,6 +1,8 @@
 // Server actions for saving a member's meal plan.
 //
-//   saveWeeklyPlan  — updates just `weeklyPlan` (current-week edits).
+//   saveWeeklyPlan  — updates just `weeklyPlan` (current-week edits). It
+//                     accepts allergens for a matching signature but does NOT
+//                     write them; that field is owned by /default-plan.
 //   saveDefaultPlan — updates `defaultPlan` AND copies it into `weeklyPlan`,
 //                     so changing your default also resets the current week.
 //
@@ -26,6 +28,8 @@ export type HealthyInput = { quota: number; slots: number[] };
 const PlanSchema = z.object({
   id: z.string().trim().length(4, "ID must be 4 characters"),
   plan: z.array(z.number().int().min(0).max(3)).length(SLOT_COUNT),
+  // Free text, so just trim and cap the length — no format to enforce.
+  allergens: z.string().trim().max(200, "Please keep allergies under 200 characters"),
   healthy: z.object({
     quota: z
       .number()
@@ -60,8 +64,9 @@ export async function saveWeeklyPlan(
   id: string,
   plan: number[],
   healthy: HealthyInput,
+  allergens: string,
 ): Promise<Result> {
-  const parsed = PlanSchema.safeParse({ id, plan, healthy });
+  const parsed = PlanSchema.safeParse({ id, plan, healthy, allergens });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
@@ -101,8 +106,9 @@ export async function saveDefaultPlan(
   id: string,
   plan: number[],
   healthy: HealthyInput,
+  allergens: string,
 ): Promise<Result> {
-  const parsed = PlanSchema.safeParse({ id, plan, healthy });
+  const parsed = PlanSchema.safeParse({ id, plan, healthy, allergens });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
@@ -124,6 +130,8 @@ export async function saveDefaultPlan(
       defaultHealthyQuota: parsed.data.healthy.quota,
       healthyQuota: parsed.data.healthy.quota,
       healthySlots: [],
+      // Blank means "nothing to report" — store null so it doesn't render.
+      allergens: parsed.data.allergens === "" ? null : parsed.data.allergens,
     },
   });
   revalidatePath("/plates");

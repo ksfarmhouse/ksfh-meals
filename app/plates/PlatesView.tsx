@@ -4,6 +4,10 @@
 //   - how many signed up "Late"          — name list on the Late card
 //   - how many signed up "In"            — used as the "set for N members"
 //                                          number on the Early card
+// An Allergens panel sits above the day picker, listing every member who has
+// entered allergies. It is intentionally day-independent — the cook should see
+// it on every visit.
+//
 //   - who flagged the healthy (chicken) option AT DINNER — its own card, plus
 //     a count on the Early Dinner card so the cook knows how many chicken
 //     plates to make. Lunch is deliberately excluded: the kitchen only needs
@@ -28,6 +32,7 @@ export interface MemberForPlates {
   fullName: string;
   weeklyPlan: number[];
   healthySlots: number[];
+  allergens: string | null;
 }
 
 interface Props {
@@ -111,8 +116,29 @@ export function PlatesView({ members }: Props) {
     };
   }, [members, day]);
 
+  // Allergies sit ABOVE the day picker and ignore it entirely: the kitchen
+  // needs to see these every time they open the page, not only on the days
+  // that member happens to be eating.
+  const allergyList = members
+    .filter((m) => m.allergens && m.allergens.trim() !== "")
+    .sort((a, b) => a.fullName.localeCompare(b.fullName));
+
   return (
     <div>
+      {allergyList.length > 0 && (
+        <div className="mb-4 p-4 bg-fh-white border-2 border-red-600 rounded">
+          <h2 className="font-bold mb-2">Allergens</h2>
+          <ul className="text-sm space-y-1">
+            {allergyList.map((m) => (
+              <li key={m.id}>
+                <span className="font-semibold">{m.fullName}</span> —{" "}
+                {m.allergens}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <DayPicker selected={day} onSelect={setDay} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

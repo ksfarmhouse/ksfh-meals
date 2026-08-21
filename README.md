@@ -212,6 +212,26 @@ Where each piece lives:
 > no backfill — contrast the padding warning under *Change the meal slot layout*
 > below.
 
+## Allergens
+
+Members enter free-text allergies / dietary restrictions on `/default-plan`
+(`Member.allergens`, nullable). Blank is stored as `null` so it doesn't render;
+values are trimmed and capped at 200 characters in `app/_actions/plans.ts`.
+
+They appear in an **Allergens** panel pinned above the day picker on `/plates`,
+listing every member who has entered something, sorted by name. It's
+deliberately day-independent — the kitchen sees it on every visit, not only on
+days that member happens to be eating.
+
+Only `saveDefaultPlan` writes the field. `saveWeeklyPlan` accepts it for a
+matching signature but ignores it, so saving on This Week can't wipe someone's
+allergies.
+
+> **`/plates` is public.** The allergen panel therefore puts a named medical
+> detail on a page anyone can load, and any 4-digit ID can edit any member's
+> entry. That's a deliberate call for kitchen visibility, not an oversight — but
+> it's the thing to revisit first if the house ever wants this tightened.
+
 ## Extending the app
 
 Common changes and where to make them:

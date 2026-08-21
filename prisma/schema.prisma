@@ -58,6 +58,12 @@ model Member {
   defaultHealthyQuota Int   @default(0)  // standing number, restored at rollover
   healthySlots        Int[] @default([]) // slots spent so far this week
 
+  // Free-text allergies / dietary restrictions, entered by the member on
+  // /default-plan. Null or empty means nothing to report. Shown at the top of
+  // the (public) /plates page so the kitchen always sees it, not just on the
+  // days that member eats.
+  allergens String?
+
   @@index([fullName])
   @@index([houseStatus])
 }

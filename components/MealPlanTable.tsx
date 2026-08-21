@@ -34,6 +34,7 @@ export type SavePlanFn = (
   id: string,
   plan: number[],
   healthy: { quota: number; slots: number[] },
+  allergens: string,
 ) => Promise<{ ok: true } | { ok: false; error: string }>;
 
 interface Props {
@@ -44,6 +45,9 @@ interface Props {
   initialHealthySlots: number[];
   // /this-week shows the per-meal checkboxes; /default-plan shows only the number.
   allowHealthySlots: boolean;
+  initialAllergens: string;
+  // Allergies are owned by /default-plan, so the box only renders there.
+  showAllergens: boolean;
   // The member's standing number. On This Week, a 0 here means whatever they
   // set is a one-week number that rollover will wipe.
   standingQuota: number;
@@ -59,6 +63,8 @@ export function MealPlanTable({
   initialPlan,
   initialHealthyQuota,
   initialHealthySlots,
+  initialAllergens,
+  showAllergens,
   allowHealthySlots,
   standingQuota,
   quotaEditable,
@@ -76,6 +82,7 @@ export function MealPlanTable({
   const [healthy, setHealthy] = useState<number[]>(
     normalizeHealthySlots(initialHealthySlots, initialPlan, initialHealthyQuota),
   );
+  const [allergens, setAllergens] = useState<string>(initialAllergens);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -127,7 +134,12 @@ export function MealPlanTable({
   function onSave() {
     clearFeedback();
     startTransition(async () => {
-      const res = await saveAction(memberId, plan, { quota, slots: healthy });
+      const res = await saveAction(
+        memberId,
+        plan,
+        { quota, slots: healthy },
+        allergens,
+      );
       if (res.ok) setMsg("Saved successfully!");
       else setErr(res.error);
     });
@@ -230,6 +242,34 @@ export function MealPlanTable({
           that&rsquo;s what the kitchen shops against.
         </p>
       </div>
+
+      {showAllergens && (
+        <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
+          <label className="block">
+            <span className="font-semibold">Allergies / dietary restrictions</span>
+            <span className="block mt-1 text-sm">
+              Anything the kitchen needs to know — e.g. &ldquo;celiac, no
+              gluten&rdquo;. Leave blank if none.
+            </span>
+            <input
+              type="text"
+              maxLength={200}
+              className="fh-input mt-2"
+              placeholder="e.g. celiac — no gluten"
+              value={allergens}
+              onChange={(e) => {
+                setAllergens(e.target.value);
+                clearFeedback();
+              }}
+            />
+          </label>
+          <p className="mt-2 text-sm">
+            This shows at the top of the{" "}
+            <span className="font-semibold">Plates</span> page, next to your
+            name, so the cook always sees it. That page is public.
+          </p>
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="fh-table mx-auto">
