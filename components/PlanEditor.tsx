@@ -31,6 +31,8 @@ export function PlanEditor({ mode }: Props) {
     plan: number[];
     healthyQuota: number;
     healthySlots: number[];
+    healthyAvailable: boolean;
+    quotaEditable: boolean;
   } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,6 +57,8 @@ export function PlanEditor({ mode }: Props) {
       healthyQuota:
         mode === "weekly" ? res.healthyQuota : res.defaultHealthyQuota,
       healthySlots: mode === "weekly" ? res.healthySlots : [],
+      healthyAvailable: res.healthyAvailable,
+      quotaEditable: res.quotaEditable,
     });
   }
 
@@ -105,6 +109,8 @@ export function PlanEditor({ mode }: Props) {
         initialHealthyQuota={member.healthyQuota}
         initialHealthySlots={member.healthySlots}
         allowHealthySlots={mode === "weekly"}
+        healthyAvailable={member.healthyAvailable}
+        quotaEditable={member.quotaEditable}
         saveAction={mode === "weekly" ? saveWeeklyPlan : saveDefaultPlan}
         planLabel={mode === "weekly" ? "this week's plan" : "default plan"}
       />

@@ -17,6 +17,7 @@ import { prisma } from "@/app/_lib/prisma";
 import {
   defaultPlanForStatus,
   isActiveStatus,
+  healthyAvailableFor,
   MEAL_VALUES,
   emptyPlan,
 } from "@/app/_lib/meals";
@@ -139,9 +140,18 @@ export async function updateMemberStatuses(
             },
           });
         }
+        // InHouse → NewMember isn't an active/inactive crossing, but new
+        // members don't get the healthy option, so clear it either way.
         return prisma.member.update({
           where: { id: u.id },
-          data: { houseStatus: u.houseStatus },
+          data: healthyAvailableFor(u.houseStatus)
+            ? { houseStatus: u.houseStatus }
+            : {
+                houseStatus: u.houseStatus,
+                healthyQuota: 0,
+                defaultHealthyQuota: 0,
+                healthySlots: [],
+              },
         });
       }),
   );

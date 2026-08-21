@@ -37,6 +37,10 @@ interface Props {
   initialHealthySlots: number[];
   // /this-week shows the per-meal checkboxes; /default-plan shows only the number.
   allowHealthySlots: boolean;
+  // New members don't get the healthy option until after initiation.
+  healthyAvailable: boolean;
+  // False Mon–Sat: the number is recorded on Sunday and fixed for the week.
+  quotaEditable: boolean;
   saveAction: SavePlanFn;
   planLabel: string;
 }
@@ -48,6 +52,8 @@ export function MealPlanTable({
   initialHealthyQuota,
   initialHealthySlots,
   allowHealthySlots,
+  healthyAvailable,
+  quotaEditable,
   saveAction,
   planLabel,
 }: Props) {
@@ -63,6 +69,9 @@ export function MealPlanTable({
   const [pending, startTransition] = useTransition();
 
   const left = healthyRemaining(quota, healthy);
+  // Only this week's number is frozen Mon–Sat. The standing number on
+  // /default-plan is for next week, so it stays editable any day.
+  const locked = allowHealthySlots && !quotaEditable;
 
   function clearFeedback() {
     setMsg(null);
@@ -108,7 +117,8 @@ export function MealPlanTable({
   // eligible slots. The checkbox is disabled when the member isn't eating that
   // meal, or when they're out of swaps and this one isn't already checked.
   function slotCell(slot: number) {
-    const eligible = allowHealthySlots && isHealthyEligible(slot);
+    const eligible =
+      healthyAvailable && allowHealthySlots && isHealthyEligible(slot);
     const checked = healthy.includes(slot);
     const isOut = plan[slot] === MEAL_VALUES.Out;
     return (
@@ -149,35 +159,60 @@ export function MealPlanTable({
       </p>
 
       <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
-        <label className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold">
-            Healthy (chicken) meals {allowHealthySlots ? "this week" : "each week"}:
-          </span>
-          <input
-            type="number"
-            min={0}
-            max={MAX_HEALTHY}
-            className="fh-input w-20"
-            value={quota}
-            onChange={(e) => setQuotaValue(Number(e.target.value))}
-          />
-          <span className="text-sm">of {MAX_HEALTHY} max</span>
-        </label>
-        <p className="mt-2 text-sm">
-          {allowHealthySlots ? (
-            <>
-              <span className="font-semibold">{left} left</span>{" "}
-              to use — tick &ldquo;chicken&rdquo; on a meal below to swap its
-              main dish.
-            </>
-          ) : (
-            <>
-              You&rsquo;ll pick which meals on the day over on{" "}
-              <span className="font-semibold">This Week</span>. This number
-              refills every week.
-            </>
-          )}
-        </p>
+        {!healthyAvailable ? (
+          // New members: no controls, just an explanation, so they aren't left
+          // wondering why everyone else has a chicken box.
+          <p className="text-sm">
+            <span className="font-semibold">Healthy (chicken) option</span> —
+            opens up after initiation.
+          </p>
+        ) : (
+          <>
+            <label className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold">
+                Healthy (chicken) meals{" "}
+                {allowHealthySlots ? "this week" : "each week"}:
+              </span>
+              {/* Mon–Sat the number is settled for the week, so it's shown as
+                  plain text rather than an editable field. */}
+              {locked ? (
+                <span className="font-semibold">{quota}</span>
+              ) : (
+                <input
+                  type="number"
+                  min={0}
+                  max={MAX_HEALTHY}
+                  className="fh-input w-20"
+                  value={quota}
+                  onChange={(e) => setQuotaValue(Number(e.target.value))}
+                />
+              )}
+              <span className="text-sm">of {MAX_HEALTHY} max</span>
+            </label>
+            <p className="mt-2 text-sm">
+              {allowHealthySlots ? (
+                <>
+                  {locked && <>🔒 Locked until Sunday — </>}
+                  <span className="font-semibold">{left} left</span>{" "}
+                  to use — tick &ldquo;chicken&rdquo; on a meal below to swap
+                  its main dish.
+                </>
+              ) : (
+                <>
+                  You&rsquo;ll pick which meals on the day over on{" "}
+                  <span className="font-semibold">This Week</span>. This number
+                  refills every week.
+                </>
+              )}
+            </p>
+            <p className="mt-2 text-sm">
+              Your number is recorded{" "}
+              <span className="font-semibold">Sunday</span>{" "}
+              — whatever it says then is what you get for the week, because
+              that&rsquo;s what the kitchen shops against.
+            </p>
+          </>
+        )}
       </div>
 
       <div className="overflow-x-auto">

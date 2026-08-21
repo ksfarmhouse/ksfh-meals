@@ -24,6 +24,9 @@
 // (you can be Late *and* chicken) and doesn't change out-of-house billing.
 // Each member gets a weekly allowance (healthyQuota) and spends it on
 // individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
+// The allowance itself is set on Sunday and read-only the rest of the week
+// (isQuotaEditable), and new members don't get it at all
+// (healthyAvailableFor).
 
 export const SLOT_COUNT = 12;
 
@@ -86,6 +89,35 @@ export function normalizeHealthySlots(
 // How many swaps the member has left to spend this week.
 export function healthyRemaining(quota: number, slots: number[]): number {
   return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
+}
+
+// New members don't get the healthy option until after initiation, so the
+// controls are hidden for them and the server refuses to store a quota.
+export function healthyAvailableFor(status: string): boolean {
+  return status !== "NewMember";
+}
+
+// The house is in Kansas; Vercel runs in UTC. Resolving the weekday in the
+// house's own zone means the Sunday window opens and closes at local
+// midnight rather than six hours off.
+export const HOUSE_TIME_ZONE = "America/Chicago";
+
+const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+export function houseDayOfWeek(now: Date = new Date()): number {
+  const label = new Intl.DateTimeFormat("en-US", {
+    timeZone: HOUSE_TIME_ZONE,
+    weekday: "short",
+  }).format(now);
+  return (WEEKDAY_NAMES as readonly string[]).indexOf(label);
+}
+
+// The chicken number is recorded on Sunday: whatever it says at the end of
+// Sunday is the allowance for the coming week, which is what the kitchen
+// shops against. Mon–Sat it's read-only — members can still SPEND it on
+// individual meals, they just can't change how many they get.
+export function isQuotaEditable(now: Date = new Date()): boolean {
+  return houseDayOfWeek(now) === 0; // Sunday
 }
 
 export function emptyPlan(fillValue: number): number[] {

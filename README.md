@@ -178,6 +178,20 @@ Three `Member` fields drive it:
 | `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
 | `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
 
+Two gates sit on top of it, both enforced server-side in
+`app/_actions/plans.ts` rather than by hiding controls:
+
+- **New members don't get it.** `healthyAvailableFor(status)` is false for
+  `NewMember`; the editor shows an "opens up after initiation" note instead of
+  the controls, and both save actions force the quota to 0 regardless of what
+  the browser sends. `updateMemberStatuses` also clears the fields when someone
+  is moved *to* `NewMember`.
+- **The number is recorded Sunday.** `isQuotaEditable()` is true only on Sunday
+  in `America/Chicago` (`HOUSE_TIME_ZONE`) — resolved in the house's zone
+  because Vercel runs in UTC, and a naive UTC check would flip the window six
+  hours early on Saturday night. Mon–Sat `saveWeeklyPlan` rejects any change to
+  `healthyQuota`; members can still *spend* it on individual meals any day.
+
 Eligible meals are slots **0–8** (Mon lunch … Fri lunch) — `HEALTHY_SLOTS` in
 `app/_lib/meals.ts`. Friday dinner (slot 9) is leftovers night, and Sat/Sun
 lunch (10, 11) aren't weekday meals, so the weekly max is 9.
@@ -193,8 +207,10 @@ Where each piece lives:
 - **Enforcement** — `app/_actions/plans.ts` re-normalizes whatever the browser
   sent and rejects an over-quota save. The disabled checkboxes are convenience,
   not the gate.
-- **Kitchen** — `/plates` shows a Chicken Lunch / Chicken Dinner card plus a
-  chicken-plate count on the set-for line.
+- **Kitchen** — `/plates` shows a Chicken Dinner card plus a chicken-plate
+  count on the Early Dinner set-for line. **Dinner only** — the kitchen only
+  needs the count for the cooked dinner service, so lunch chicken flags are not
+  surfaced there even though members can still set them.
 
 > `healthySlots` is deliberately an index list rather than a parallel
 > 12-length array. No array length is load-bearing, so adding the column needed

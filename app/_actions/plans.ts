@@ -18,6 +18,8 @@ import {
   SLOT_COUNT,
   MAX_HEALTHY,
   normalizeHealthySlots,
+  healthyAvailableFor,
+  isQuotaEditable,
 } from "@/app/_lib/meals";
 
 export type HealthyInput = { quota: number; slots: number[] };
@@ -64,11 +66,33 @@ export async function saveWeeklyPlan(
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
-  const exists = await prisma.member.findUnique({
+  const member = await prisma.member.findUnique({
     where: { id: parsed.data.id },
-    select: { id: true },
+    select: { id: true, houseStatus: true, healthyQuota: true },
   });
-  if (!exists) return { ok: false, error: "Member not found" };
+  if (!member) return { ok: false, error: "Member not found" };
+
+  // New members don't get the healthy option at all. Enforced here, not just
+  // by hiding the controls.
+  if (!healthyAvailableFor(member.houseStatus)) {
+    await prisma.member.update({
+      where: { id: parsed.data.id },
+      data: { weeklyPlan: parsed.data.plan, healthyQuota: 0, healthySlots: [] },
+    });
+    revalidatePath("/plates");
+    revalidatePath("/this-week");
+    return { ok: true };
+  }
+
+  // The allowance is recorded on Sunday. Mon–Sat you can still spend it on
+  // individual meals, but the number itself is fixed for the week.
+  if (!isQuotaEditable() && parsed.data.healthy.quota !== member.healthyQuota) {
+    return {
+      ok: false,
+      error:
+        "Your healthy-meal number is locked in for this week. You can change it again on Sunday.",
+    };
+  }
 
   const checked = checkHealthy(parsed.data.healthy, parsed.data.plan);
   if (!checked.ok) return checked;
@@ -95,11 +119,16 @@ export async function saveDefaultPlan(
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
-  const exists = await prisma.member.findUnique({
+  const member = await prisma.member.findUnique({
     where: { id: parsed.data.id },
-    select: { id: true },
+    select: { id: true, houseStatus: true },
   });
-  if (!exists) return { ok: false, error: "Member not found" };
+  if (!member) return { ok: false, error: "Member not found" };
+
+  // New members don't get the healthy option until after initiation.
+  const quota = healthyAvailableFor(member.houseStatus)
+    ? parsed.data.healthy.quota
+    : 0;
 
   // Saving the default also resets the current week to match. For the healthy
   // option that means the standing number becomes this week's allowance and
@@ -110,8 +139,8 @@ export async function saveDefaultPlan(
     data: {
       defaultPlan: parsed.data.plan,
       weeklyPlan: parsed.data.plan,
-      defaultHealthyQuota: parsed.data.healthy.quota,
-      healthyQuota: parsed.data.healthy.quota,
+      defaultHealthyQuota: quota,
+      healthyQuota: quota,
       healthySlots: [],
     },
   });

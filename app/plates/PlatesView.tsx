@@ -4,8 +4,10 @@
 //   - how many signed up "Late"          — name list on the Late card
 //   - how many signed up "In"            — used as the "set for N members"
 //                                          number on the Early card
-//   - who flagged the healthy (chicken) option — its own card, plus a count
-//     on the Early card so the cook knows how many chicken plates to make
+//   - who flagged the healthy (chicken) option AT DINNER — its own card, plus
+//     a count on the Early Dinner card so the cook knows how many chicken
+//     plates to make. Lunch is deliberately excluded: the kitchen only needs
+//     the chicken count for the cooked dinner service.
 //
 // All work happens client-side over the array we got from the server
 // component, so flipping between days is instant.
@@ -85,7 +87,6 @@ export function PlatesView({ members }: Props) {
     const earlyLunch = namesWith(members, lunchSlot, MEAL_VALUES.Early);
     const lateLunch = namesWith(members, lunchSlot, MEAL_VALUES.Late);
     const inAtLunch = countWith(members, lunchSlot, MEAL_VALUES.In);
-    const chickenLunch = healthyNames(members, lunchSlot);
 
     let earlyDinner: string[] = [];
     let lateDinner: string[] = [];
@@ -105,7 +106,6 @@ export function PlatesView({ members }: Props) {
       lateDinner,
       inAtLunch,
       inAtDinner,
-      chickenLunch,
       chickenDinner,
       hasDinner: dinnerSlot !== null,
     };
@@ -119,18 +119,9 @@ export function PlatesView({ members }: Props) {
         <PlateCard
           title="Early Lunch"
           names={view.earlyLunch}
-          extra={
-            <>
-              <div>Set for {view.inAtLunch} Members</div>
-              <div>
-                {view.chickenLunch.length} chicken plate
-                {view.chickenLunch.length === 1 ? "" : "s"}
-              </div>
-            </>
-          }
+          extra={<div>Set for {view.inAtLunch} Members</div>}
         />
         <PlateCard title="Late Lunch" names={view.lateLunch} />
-        <PlateCard title="Chicken Lunch" names={view.chickenLunch} />
         {view.hasDinner && (
           <>
             <PlateCard
