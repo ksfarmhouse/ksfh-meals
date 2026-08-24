@@ -237,10 +237,10 @@ export function MealPlanTable({
         <p className="mt-2 text-sm">
           {allowHealthySlots ? (
             <>
-              {locked && <>🔒 Locked until Sunday — </>}
+              {locked && <>🔒 Locked until Saturday — </>}
               <span className="font-semibold">{left} left</span>{" "}
-              to use — tick &ldquo;chicken&rdquo; on a meal below to swap its
-              main dish.
+              to use — tick &ldquo;chicken&rdquo; on a dinner below to swap
+              its main dish.
             </>
           ) : (
             <>
@@ -258,10 +258,10 @@ export function MealPlanTable({
           </p>
         )}
         <p className="mt-2 text-sm">
-          Your number is recorded{" "}
-          <span className="font-semibold">Sunday</span>{" "}
-          — whatever it says then is what you get for the week, because
-          that&rsquo;s what the kitchen shops against.
+          You can change this number{" "}
+          <span className="font-semibold">Saturday and Sunday</span>. Whatever
+          it says when Sunday ends is what you get for the week — the house
+          shops Monday off that total.
         </p>
       </div>
       )}

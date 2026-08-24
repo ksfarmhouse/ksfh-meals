@@ -26,13 +26,14 @@ export function MealStatusLegend({ showHealthy }: Props) {
         </li>
         {showHealthy && (
         <li>
-          <strong>chicken</strong> — swaps the main dish for chicken. You&rsquo;re
-          still at the meal, so it works with Early and Late too. Pick how many
-          you want each week (up to 9), then tick the meals you want on the day.
-          Friday dinner is leftovers, so it and the weekends aren&rsquo;t
-          eligible. Your number is recorded <strong>Sunday</strong> and is
-          fixed for the rest of the week — you can still choose which meals to
-          spend it on any day.
+          <strong>chicken</strong> — swaps the main dish for chicken at{" "}
+          <strong>dinner</strong>. You&rsquo;re still at the meal, so it works
+          with Early and Late too. Pick how many you want each week (up to 4),
+          then tick the dinners you want on the day. Mon&ndash;Thu dinner only:
+          Friday is leftovers, and lunches aren&rsquo;t eligible. You set your
+          number <strong>Saturday and Sunday</strong>; it&rsquo;s fixed
+          Mon&ndash;Fri, though you can still choose which dinners to spend it
+          on any day.
         </li>
         )}
       </ul>

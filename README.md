@@ -197,9 +197,14 @@ Two more gates sit on top of it, both enforced server-side in
   hours early on Saturday night. Mon–Sat `saveWeeklyPlan` rejects any change to
   `healthyQuota`; members can still *spend* it on individual meals any day.
 
-Eligible meals are slots **0–8** (Mon lunch … Fri lunch) — `HEALTHY_SLOTS` in
-`app/_lib/meals.ts`. Friday dinner (slot 9) is leftovers night, and Sat/Sun
-lunch (10, 11) aren't weekday meals, so the weekly max is 9.
+Eligible meals are **Mon–Thu dinner** (slots 1, 3, 5, 7) — `HEALTHY_SLOTS` in
+`app/_lib/meals.ts`. Friday dinner is leftovers night and lunches aren't
+plated with chicken, so the weekly max is 4.
+
+The number is set over the **weekend**: `isQuotaEditable()` opens the window
+Saturday 00:00 and closes it at the end of Sunday, house time. Monday the
+total is final — `/admin` shows it under the Weekly Menu save button, and
+that's the figure handed to the chef before the week's shopping.
 
 Where each piece lives:
 

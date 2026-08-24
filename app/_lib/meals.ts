@@ -24,7 +24,7 @@
 // (you can be Late *and* chicken) and doesn't change out-of-house billing.
 // Each member gets a weekly allowance (healthyQuota) and spends it on
 // individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
-// The allowance itself is set on Sunday and read-only the rest of the week
+// The allowance itself is set over the weekend and read-only Mon–Fri
 // (isQuotaEditable), and the whole feature is currently limited to the member
 // IDs in HEALTHY_PREVIEW_IDS while it's still being built out.
 
@@ -60,11 +60,12 @@ export function dinnerSlotForDay(dayIdx: number): number | null {
   return dayIdx < 5 ? DINNER_SLOTS[dayIdx] : null;
 }
 
-// Meals eligible for the healthy (chicken) swap: every weekday meal EXCEPT
-// Friday dinner (slot 9), which is leftovers night. Sat/Sun lunch (10, 11)
-// aren't weekday meals. That leaves exactly 9 slots — hence the weekly max.
-export const HEALTHY_SLOTS = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const;
-export const MAX_HEALTHY = HEALTHY_SLOTS.length; // 9
+// Meals eligible for the healthy (chicken) swap: DINNERS ONLY, Mon–Thu.
+// Friday dinner (slot 9) is leftovers night, and lunches are out because the
+// kitchen only plates chicken at the cooked dinner service. That leaves
+// exactly 4 slots — hence the weekly max.
+export const HEALTHY_SLOTS = [1, 3, 5, 7] as const; // Mon/Tue/Wed/Thu dinner
+export const MAX_HEALTHY = HEALTHY_SLOTS.length; // 4
 
 export function isHealthyEligible(slot: number): boolean {
   return (HEALTHY_SLOTS as readonly number[]).includes(slot);
@@ -120,20 +121,19 @@ export function houseDayOfWeek(now: Date = new Date()): number {
   return (WEEKDAY_NAMES as readonly string[]).indexOf(label);
 }
 
-// The chicken number is recorded on Sunday: whatever it says at the end of
-// Sunday is the allowance for the coming week, which is what the kitchen
-// shops against. When the lock is on, Mon–Sat the number is read-only —
-// members can still SPEND it on individual meals, they just can't change how
-// many they get.
-//
-// The lock is OFF for now while the house gets used to the feature. Flip this
-// to true to turn it back on; everything else (the server check in plans.ts,
-// the read-only display, the "locked until Sunday" note) is already wired up.
-export const QUOTA_LOCK_ENABLED = false;
+// The chicken number is set over the WEEKEND: the window opens Saturday at
+// 00:00 and closes at the end of Sunday, house time. Monday morning the total
+// is final — that's the number handed to the chef, and the house shops that
+// day. Mon–Fri the number is read-only; members can still SPEND it on
+// individual dinners, they just can't change how many they get.
+export const QUOTA_LOCK_ENABLED = true;
+
+// Days the number can be changed: Saturday (6) and Sunday (0).
+const QUOTA_EDIT_DAYS = [6, 0];
 
 export function isQuotaEditable(now: Date = new Date()): boolean {
   if (!QUOTA_LOCK_ENABLED) return true;
-  return houseDayOfWeek(now) === 0; // Sunday
+  return QUOTA_EDIT_DAYS.includes(houseDayOfWeek(now));
 }
 
 export function emptyPlan(fillValue: number): number[] {
