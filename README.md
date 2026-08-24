@@ -1,7 +1,7 @@
 # KSFH Meals
 
 Internal meal sign-up site for the K-State FarmHouse fraternity. Built with
-Next.js 15 (App Router), Prisma, and a Supabase Postgres database. Deploys to
+Next.js 16 (App Router), Prisma, and a Supabase Postgres database. Deploys to
 Vercel; domain via GoDaddy.
 
 All application state (members, meal sign-ups, weekly menu, attendance counts)
@@ -11,7 +11,7 @@ server restarts never alter user data.
 
 ## Stack
 
-- Next.js 15 (App Router, Server Components, Server Actions)
+- Next.js 16 (App Router, Server Components, Server Actions)
 - TypeScript
 - Tailwind CSS with brand CSS variables
 - Prisma ORM → Supabase Postgres (pooled `DATABASE_URL` at runtime, direct
@@ -174,7 +174,7 @@ Three `Member` fields drive it:
 
 | Field | Meaning |
 | --- | --- |
-| `healthyQuota` | How many swaps this member gets **this week** (0–9). |
+| `healthyQuota` | How many swaps this member gets **this week** (0–3). |
 | `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
 | `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
 
@@ -188,23 +188,32 @@ sees no trace of it until it's in real use.
 **To launch it to the whole house, set `HEALTHY_PREVIEW_IDS = null`.** That one
 change re-enables everything; nothing else needs touching.
 
-Two more gates sit on top of it, both enforced server-side in
-`app/_actions/plans.ts` rather than by hiding controls:
+Eligible meals are **Mon, Tue and Thu dinner** (slots 1, 3, 7) —
+`HEALTHY_SLOTS` in `app/_lib/meals.ts`. Wednesday is excluded, Friday dinner is
+leftovers night, and lunches aren't plated with chicken, so the weekly max is 3.
 
-- **The number is recorded Sunday.** `isQuotaEditable()` is true only on Sunday
-  in `America/Chicago` (`HOUSE_TIME_ZONE`) — resolved in the house's zone
-  because Vercel runs in UTC, and a naive UTC check would flip the window six
-  hours early on Saturday night. Mon–Sat `saveWeeklyPlan` rejects any change to
-  `healthyQuota`; members can still *spend* it on individual meals any day.
+Two independent deadlines, both enforced server-side in `app/_actions/plans.ts`
+rather than by hiding controls in the browser:
 
-Eligible meals are **Mon–Thu dinner** (slots 1, 3, 5, 7) — `HEALTHY_SLOTS` in
-`app/_lib/meals.ts`. Friday dinner is leftovers night and lunches aren't
-plated with chicken, so the weekly max is 4.
+- **How many** (`healthyQuota`) — `isQuotaEditable()` opens Saturday 00:00 and
+  closes at the end of Sunday, house time. Mon–Fri the number is frozen.
+  `saveDefaultPlan` deliberately stops copying the standing number into the
+  current week once the window shuts, so saving a default plan mid-week can't
+  be used to edit a locked number.
+- **Which ones** (`healthySlots`) — `isDinnerChoiceLocked()` closes each dinner
+  at **4:30pm on its own day** (`DINNER_CUTOFF_HOUR` / `_MINUTE`), when the cook
+  needs that night's count. Nothing is locked on Sat/Sun, since that's the
+  planning window for the week ahead.
 
-The number is set over the **weekend**: `isQuotaEditable()` opens the window
-Saturday 00:00 and closes it at the end of Sunday, house time. Monday the
-total is final — `/admin` shows it under the Weekly Menu save button, and
-that's the figure handed to the chef before the week's shopping.
+Weekdays and clock are resolved in `America/Chicago` (`HOUSE_TIME_ZONE`) because
+Vercel runs in UTC and a naive check would flip the window six hours early.
+
+Monday the total is final — `/admin` shows it under the Weekly Menu save button,
+and that's the figure handed to the chef before the week's shopping.
+
+**`CHICKEN_LOCKS_ENABLED`** in `app/_lib/meals.ts` turns *both* deadlines off in
+one line. That's the switch to flip for testing; set it back to `true` for
+normal operation.
 
 Where each piece lives:
 

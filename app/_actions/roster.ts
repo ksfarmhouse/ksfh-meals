@@ -7,19 +7,17 @@
 //                            Has special handling for active↔inactive moves.
 //   removeMember           — delete a single member.
 //
-// All admin-gated by middleware.ts (the file lives under /admin/*).
+// All admin-gated by middleware.ts: these are only called from pages under
+// /admin, so the action POST goes to an /admin URL and hits the
+// /admin/:path* matcher. The gate follows the CALLING page's URL, not where
+// this file happens to live.
 
 "use server";
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/_lib/prisma";
-import {
-  defaultPlanForStatus,
-  isActiveStatus,
-  MEAL_VALUES,
-  emptyPlan,
-} from "@/app/_lib/meals";
+import { defaultPlanForStatus, isActiveStatus } from "@/app/_lib/meals";
 
 const HouseStatus = z.enum(["NewMember", "InHouse", "OutOfHouse", "Alumni"]);
 type HouseStatusT = z.infer<typeof HouseStatus>;
@@ -54,7 +52,10 @@ export async function addMember(_prev: AddState, formData: FormData): Promise<Ad
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
   const { id, firstName, lastName, houseStatus } = parsed.data;
-  const existing = await prisma.member.findUnique({ where: { id } });
+  const existing = await prisma.member.findUnique({
+    where: { id },
+    select: { id: true },
+  });
   if (existing) return { ok: false, error: `ID ${id} is already in use` };
 
   const plan = defaultPlanForStatus(houseStatus);
@@ -106,8 +107,6 @@ export async function updateMemberStatuses(
     select: { id: true, houseStatus: true },
   });
   const currentById = new Map(members.map((m) => [m.id, m.houseStatus]));
-  const allIn = emptyPlan(MEAL_VALUES.In);
-  const allOut = emptyPlan(MEAL_VALUES.Out);
 
   // If a member's status crosses the "active" boundary
   //   active   = InHouse, NewMember   (eats at the house by default)
@@ -115,16 +114,13 @@ export async function updateMemberStatuses(
   // we also reset both of their plan arrays. Going from active → inactive
   // shouldn't leave them signed up to eat every meal; going the other way
   // shouldn't leave them marked Out for every meal.
-  let touched = 0;
+  const applicable = parsed.data.updates.filter((u) => currentById.has(u.id));
   await prisma.$transaction(
-    parsed.data.updates
-      .filter((u) => currentById.has(u.id))
-      .map((u) => {
+    applicable.map((u) => {
         const prev = currentById.get(u.id)!;
         const crossed = isActiveStatus(prev) !== isActiveStatus(u.houseStatus);
-        touched += 1;
         if (crossed) {
-          const plan = isActiveStatus(u.houseStatus) ? allIn : allOut;
+          const plan = defaultPlanForStatus(u.houseStatus);
           return prisma.member.update({
             where: { id: u.id },
             data: {
@@ -143,13 +139,13 @@ export async function updateMemberStatuses(
           where: { id: u.id },
           data: { houseStatus: u.houseStatus },
         });
-      }),
+    }),
   );
 
   revalidatePath("/admin/roster");
   revalidatePath("/plates");
   revalidatePath("/treasurer");
-  return { ok: true, message: `Updated ${touched} member(s).` };
+  return { ok: true, message: `Updated ${applicable.length} member(s).` };
 }
 
 const RemoveSchema = z.object({
@@ -158,8 +154,7 @@ const RemoveSchema = z.object({
 
 export type RemoveState =
   | { ok: true; message: string }
-  | { ok: false; error: string }
-  | null;
+  | { ok: false; error: string };
 
 export async function removeMember(id: string): Promise<RemoveState> {
   const parsed = RemoveSchema.safeParse({ id });

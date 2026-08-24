@@ -12,6 +12,13 @@ export default async function TreasurerPage() {
       OR: [{ lunchesOwed: { gt: 0 } }, { dinnersOwed: { gt: 0 } }],
     },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      lunchesOwed: true,
+      dinnersOwed: true,
+    },
   });
 
   return (

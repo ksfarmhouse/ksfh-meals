@@ -22,11 +22,12 @@
 // (chicken) option — chicken replaces the main dish at a meal they're still
 // attending. It's a swap, not a skip, so it's independent of In/Out/Early/Late
 // (you can be Late *and* chicken) and doesn't change out-of-house billing.
-// Each member gets a weekly allowance (healthyQuota) and spends it on
-// individual slots day-of; see HEALTHY_SLOTS below for which meals qualify.
-// The allowance itself is set over the weekend and read-only Mon–Fri
-// (isQuotaEditable), and the whole feature is currently limited to the member
-// IDs in HEALTHY_PREVIEW_IDS while it's still being built out.
+//
+// Two independent deadlines govern it, both in the CHICKEN RULES section below:
+//   HOW MANY  (healthyQuota)  — set over the weekend, fixed Mon–Fri.
+//   WHICH ONES (healthySlots) — each dinner locks at 4:30pm on its own day.
+// Both are off when CHICKEN_LOCKS_ENABLED is false, which is the switch to
+// flip for testing.
 
 export const SLOT_COUNT = 12;
 
@@ -60,12 +61,12 @@ export function dinnerSlotForDay(dayIdx: number): number | null {
   return dayIdx < 5 ? DINNER_SLOTS[dayIdx] : null;
 }
 
-// Meals eligible for the healthy (chicken) swap: DINNERS ONLY, Mon–Thu.
-// Friday dinner (slot 9) is leftovers night, and lunches are out because the
-// kitchen only plates chicken at the cooked dinner service. That leaves
-// exactly 4 slots — hence the weekly max.
-export const HEALTHY_SLOTS = [1, 3, 5, 7] as const; // Mon/Tue/Wed/Thu dinner
-export const MAX_HEALTHY = HEALTHY_SLOTS.length; // 4
+// Meals eligible for the healthy (chicken) swap: DINNERS ONLY, and not every
+// one of them. Wednesday is off the list, Friday dinner is leftovers night,
+// and lunches are out because the kitchen only plates chicken at the cooked
+// dinner service. That leaves exactly 3 slots — hence the weekly max.
+export const HEALTHY_SLOTS = [1, 3, 7] as const; // Mon / Tue / Thu dinner
+export const MAX_HEALTHY = HEALTHY_SLOTS.length; // 3
 
 export function isHealthyEligible(slot: number): boolean {
   return (HEALTHY_SLOTS as readonly number[]).includes(slot);
@@ -92,48 +93,101 @@ export function healthyRemaining(quota: number, slots: number[]): number {
   return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
 }
 
-// PREVIEW GATE ------------------------------------------------------------
-// The healthy (chicken) option is still being worked on, so it's limited to
-// these member IDs. Everyone else sees no chicken controls at all, and the
-// server refuses to store a quota for them (app/_actions/plans.ts) — hiding
-// the UI alone wouldn't stop anyone who knows how to post to the action.
-//
-// To open it up to the whole house again, set this to null. That single
-// change re-enables the feature everywhere; nothing else needs touching.
+// ===== CHICKEN RULES =========================================================
+// The two switches below are the only things to change when the house wants
+// different behavior. Everything else follows from them.
+
+// TESTING SWITCH. true = deadlines enforced (normal operation).
+//                 false = nothing is ever locked, so the whole flow can be
+//                 exercised on any day at any time.
+export const CHICKEN_LOCKS_ENABLED = true;
+
+// Who can see the chicken option at all, while it's still being built out.
+// Set to null to open it to the whole house — that one change is the launch.
 export const HEALTHY_PREVIEW_IDS: readonly string[] | null = ["1327"];
 
 export function healthyAvailableFor(memberId: string): boolean {
   return HEALTHY_PREVIEW_IDS === null || HEALTHY_PREVIEW_IDS.includes(memberId);
 }
 
-// The house is in Kansas; Vercel runs in UTC. Resolving the weekday in the
-// house's own zone means the Sunday window opens and closes at local
-// midnight rather than six hours off.
+// The house is in Kansas; Vercel runs in UTC. Resolving the clock in the
+// house's own zone means the weekend window and the 4:30pm cutoffs land on
+// local time rather than six hours off.
 export const HOUSE_TIME_ZONE = "America/Chicago";
 
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
-export function houseDayOfWeek(now: Date = new Date()): number {
-  const label = new Intl.DateTimeFormat("en-US", {
+// House-local weekday and clock, read in one pass so both can't disagree
+// across a midnight boundary. Weekday is JS-style: 0=Sun … 6=Sat.
+function houseNow(now: Date): { day: number; hour: number; minute: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: HOUSE_TIME_ZONE,
     weekday: "short",
-  }).format(now);
-  return (WEEKDAY_NAMES as readonly string[]).indexOf(label);
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return {
+    day: (WEEKDAY_NAMES as readonly string[]).indexOf(get("weekday")),
+    hour: Number(get("hour")),
+    minute: Number(get("minute")),
+  };
 }
 
-// The chicken number is set over the WEEKEND: the window opens Saturday at
-// 00:00 and closes at the end of Sunday, house time. Monday morning the total
-// is final — that's the number handed to the chef, and the house shops that
-// day. Mon–Fri the number is read-only; members can still SPEND it on
-// individual dinners, they just can't change how many they get.
-export const QUOTA_LOCK_ENABLED = true;
+export function houseDayOfWeek(now: Date = new Date()): number {
+  return houseNow(now).day;
+}
 
-// Days the number can be changed: Saturday (6) and Sunday (0).
-const QUOTA_EDIT_DAYS = [6, 0];
+// --- Deadline 1: HOW MANY -----------------------------------------------
+// The number is set over the WEEKEND — the window opens Saturday 00:00 and
+// closes at the end of Sunday, house time. Monday the total is final: that's
+// the figure handed to the chef, and the house shops that day. Mon–Fri the
+// number is frozen, though members can still SPEND it on individual dinners.
+const QUOTA_EDIT_DAYS = [6, 0]; // Saturday, Sunday
 
 export function isQuotaEditable(now: Date = new Date()): boolean {
-  if (!QUOTA_LOCK_ENABLED) return true;
-  return QUOTA_EDIT_DAYS.includes(houseDayOfWeek(now));
+  if (!CHICKEN_LOCKS_ENABLED) return true;
+  return QUOTA_EDIT_DAYS.includes(houseNow(now).day);
+}
+
+// --- Deadline 2: WHICH ONES ---------------------------------------------
+// Each eligible dinner locks at 4:30pm on its own day, when the cook needs
+// the count for that night's service. Monday's choice locks Monday at 4:30;
+// Tuesday's and Thursday's lock on their own days. Later dinners stay open.
+export const DINNER_CUTOFF_HOUR = 16;
+export const DINNER_CUTOFF_MINUTE = 30;
+
+// Slot index -> meal-week day (0=Mon … 6=Sun), the layout at the top of this
+// file. Note this differs from houseNow().day, which is JS-style (0=Sun).
+function mealDayForSlot(slot: number): number {
+  const lunch = (LUNCH_SLOTS as readonly number[]).indexOf(slot);
+  if (lunch !== -1) return lunch;
+  return (DINNER_SLOTS as readonly number[]).indexOf(slot);
+}
+
+export function isDinnerChoiceLocked(slot: number, now: Date = new Date()): boolean {
+  if (!CHICKEN_LOCKS_ENABLED) return false;
+
+  const { day, hour, minute } = houseNow(now);
+  // Sat/Sun is the planning window for the week AHEAD, so nothing is locked
+  // then — otherwise every weekday dinner would look shut on the very days
+  // members are meant to be choosing them.
+  if (QUOTA_EDIT_DAYS.includes(day)) return false;
+
+  const today = (day + 6) % 7; // JS weekday -> meal-week day (Mon = 0)
+  const mealDay = mealDayForSlot(slot);
+  if (mealDay < today) return true; // that dinner already happened
+  if (mealDay > today) return false; // still ahead of us
+  return (
+    hour > DINNER_CUTOFF_HOUR ||
+    (hour === DINNER_CUTOFF_HOUR && minute >= DINNER_CUTOFF_MINUTE)
+  );
+}
+
+// Every eligible dinner still open for changes right now.
+export function openHealthySlots(now: Date = new Date()): number[] {
+  return HEALTHY_SLOTS.filter((slot) => !isDinnerChoiceLocked(slot, now));
 }
 
 export function emptyPlan(fillValue: number): number[] {
@@ -142,7 +196,7 @@ export function emptyPlan(fillValue: number): number[] {
 
 export function defaultPlanForStatus(status: string): number[] {
   // InHouse / NewMember default to all In (0); everyone else all Out (1).
-  return status === "InHouse" || status === "NewMember"
+  return isActiveStatus(status)
     ? emptyPlan(MEAL_VALUES.In)
     : emptyPlan(MEAL_VALUES.Out);
 }

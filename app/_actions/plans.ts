@@ -3,6 +3,9 @@
 //   saveWeeklyPlan  — updates just `weeklyPlan` (current-week edits). It
 //                     accepts allergens for a matching signature but does NOT
 //                     write them; that field is owned by /default-plan.
+//
+// Both re-apply the chicken deadlines from app/_lib/meals.ts server-side. The
+// browser disables the controls too, but that's convenience — this is the gate.
 //   saveDefaultPlan — updates `defaultPlan` AND copies it into `weeklyPlan`,
 //                     so changing your default also resets the current week.
 //
@@ -22,6 +25,7 @@ import {
   normalizeHealthySlots,
   healthyAvailableFor,
   isQuotaEditable,
+  isDinnerChoiceLocked,
 } from "@/app/_lib/meals";
 
 export type HealthyInput = { quota: number; slots: number[] };
@@ -73,41 +77,50 @@ export async function saveWeeklyPlan(
   }
   const member = await prisma.member.findUnique({
     where: { id: parsed.data.id },
-    select: { id: true, healthyQuota: true },
+    select: { id: true, healthyQuota: true, healthySlots: true },
   });
   if (!member) return { ok: false, error: "Member not found" };
 
-  // Outside the preview the chicken option doesn't exist: save the meal plan
-  // and pin the healthy fields to zero, whatever the browser sent.
-  if (!healthyAvailableFor(parsed.data.id)) {
-    await prisma.member.update({
-      where: { id: parsed.data.id },
-      data: { weeklyPlan: parsed.data.plan, healthyQuota: 0, healthySlots: [] },
-    });
-    revalidatePath("/plates");
-    revalidatePath("/this-week");
-    return { ok: true };
-  }
+  // Outside the preview the chicken option doesn't exist for this member, so
+  // the meal plan still saves but the healthy fields are pinned to zero,
+  // whatever the browser sent.
+  let quota = 0;
+  let slots: number[] = [];
 
-  // The allowance is recorded on Sunday. Mon–Sat you can still spend it on
-  // individual meals, but the number itself is fixed for the week.
-  if (!isQuotaEditable() && parsed.data.healthy.quota !== member.healthyQuota) {
-    return {
-      ok: false,
-      error:
-        "Your healthy-meal number is locked in for this week. You can change it again on Sunday.",
-    };
-  }
+  if (healthyAvailableFor(parsed.data.id)) {
+    // Deadline 1 — how many. Set over the weekend, frozen Mon–Fri.
+    if (!isQuotaEditable() && parsed.data.healthy.quota !== member.healthyQuota) {
+      return {
+        ok: false,
+        error:
+          "Your chicken number is locked in for this week. You can change it again Saturday.",
+      };
+    }
 
-  const checked = checkHealthy(parsed.data.healthy, parsed.data.plan);
-  if (!checked.ok) return checked;
+    // Deadline 2 — which ones. A dinner past its 4:30pm cutoff keeps whatever
+    // is already stored: the cook has that night's count, so the member can
+    // neither add a chicken plate nor take one back.
+    const merged = [
+      ...member.healthySlots.filter((slot) => isDinnerChoiceLocked(slot)),
+      ...parsed.data.healthy.slots.filter((slot) => !isDinnerChoiceLocked(slot)),
+    ];
+
+    const checked = checkHealthy(
+      { quota: parsed.data.healthy.quota, slots: merged },
+      parsed.data.plan,
+    );
+    if (!checked.ok) return checked;
+
+    quota = parsed.data.healthy.quota;
+    slots = checked.slots;
+  }
 
   await prisma.member.update({
     where: { id: parsed.data.id },
     data: {
       weeklyPlan: parsed.data.plan,
-      healthyQuota: parsed.data.healthy.quota,
-      healthySlots: checked.slots,
+      healthyQuota: quota,
+      healthySlots: slots,
     },
   });
   revalidatePath("/plates");
@@ -134,18 +147,19 @@ export async function saveDefaultPlan(
   // Same preview gate as saveWeeklyPlan — zero regardless of what was sent.
   const quota = healthyAvailableFor(parsed.data.id) ? parsed.data.healthy.quota : 0;
 
-  // Saving the default also resets the current week to match. For the healthy
-  // option that means the standing number becomes this week's allowance and
-  // any slots already spent are wiped — /default-plan only carries the number,
-  // since which meals get swapped is decided day-of.
+  // Saving the default also resets the current week to match — EXCEPT for the
+  // chicken number once the weekend window has shut. Copying it through Mon–Fri
+  // would be a way to edit a locked number just by saving a default plan, and
+  // the chef has already been given that week's total.
+  const carriesIntoThisWeek = isQuotaEditable();
+
   await prisma.member.update({
     where: { id: parsed.data.id },
     data: {
       defaultPlan: parsed.data.plan,
       weeklyPlan: parsed.data.plan,
       defaultHealthyQuota: quota,
-      healthyQuota: quota,
-      healthySlots: [],
+      ...(carriesIntoThisWeek ? { healthyQuota: quota, healthySlots: [] } : {}),
       // Blank means "nothing to report" — store null so it doesn't render.
       allergens: parsed.data.allergens === "" ? null : parsed.data.allergens,
     },

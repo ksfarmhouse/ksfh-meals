@@ -15,6 +15,10 @@
 // Why not iron-session or NextAuth: this app has exactly one auth state
 // ("is admin"). A library would be overkill.
 
+// Pulled through the validated env module so a misconfigured server fails
+// at startup with a clear message, not on first cookie verification.
+import { env } from "./env";
+
 export const SESSION_COOKIE = "ksfh_admin";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
@@ -37,18 +41,12 @@ function b64urlDecode(s: string): Uint8Array {
   return out;
 }
 
-// Pulled through the validated env module so a misconfigured server fails
-// at startup with a clear message, not on first cookie verification.
-import { env } from "./env";
-function getSecret(): string {
-  return env.SESSION_SECRET;
-}
 
 async function hmac(data: string): Promise<Uint8Array> {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
-    enc.encode(getSecret()),
+    enc.encode(env.SESSION_SECRET),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign", "verify"],

@@ -18,10 +18,13 @@ import {
   SLOT_COUNT,
   WEEKDAYS,
   MAX_HEALTHY,
+  HEALTHY_SLOTS,
   isHealthyEligible,
+  isDinnerChoiceLocked,
   normalizeHealthySlots,
   healthyRemaining,
 } from "@/app/_lib/meals";
+import { MealStatusLegend } from "./MealStatusLegend";
 
 // "" (a cleared box) and anything out of range both resolve to a usable number.
 function parseQuota(text: string): number {
@@ -54,7 +57,7 @@ interface Props {
   // The member's standing number. On This Week, a 0 here means whatever they
   // set is a one-week number that rollover will wipe.
   standingQuota: number;
-  // False Mon–Sat: the number is recorded on Sunday and fixed for the week.
+  // False Mon–Fri: the number is recorded on Sunday and fixed for the week.
   quotaEditable: boolean;
   saveAction: SavePlanFn;
   planLabel: string;
@@ -92,7 +95,7 @@ export function MealPlanTable({
   const [pending, startTransition] = useTransition();
 
   const left = healthyRemaining(quota, healthy);
-  // Only this week's number is frozen Mon–Sat. The standing number on
+  // Only this week's number is frozen Mon–Fri. The standing number on
   // /default-plan is for next week, so it stays editable any day.
   const locked = allowHealthySlots && !quotaEditable;
 
@@ -125,8 +128,15 @@ export function MealPlanTable({
     const next =
       raw === "" ? "" : String(Math.min(MAX_HEALTHY, Number(raw)));
     setQuotaText(next);
-    // Lowering the number below what's already spent trims the extra meals.
-    setHealthy((h) => normalizeHealthySlots(h, plan, parseQuota(next)));
+    const q = parseQuota(next);
+    setHealthy((h) =>
+      q === MAX_HEALTHY
+        ? // Taking the full allowance leaves nothing to choose, so tick every
+          // dinner rather than making them do it by hand.
+          normalizeHealthySlots([...HEALTHY_SLOTS], plan, q)
+        : // Lowering the number below what's already spent trims the extras.
+          normalizeHealthySlots(h, plan, q),
+    );
     clearFeedback();
   }
 
@@ -157,6 +167,9 @@ export function MealPlanTable({
       healthyAvailable && allowHealthySlots && isHealthyEligible(slot);
     const checked = healthy.includes(slot);
     const isOut = plan[slot] === MEAL_VALUES.Out;
+    // Past 4:30pm on its own day the cook already has that night's count.
+    const pastCutoff = eligible && isDinnerChoiceLocked(slot);
+    const disabled = isOut || pastCutoff || (!checked && left === 0);
     return (
       <td key={slot}>
         <select
@@ -175,11 +188,11 @@ export function MealPlanTable({
             <input
               type="checkbox"
               checked={checked}
-              disabled={isOut || (!checked && left === 0)}
+              disabled={disabled}
               onChange={() => toggleHealthy(slot)}
             />
-            <span className={isOut || (!checked && left === 0) ? "opacity-50" : ""}>
-              chicken
+            <span className={disabled ? "opacity-50" : ""}>
+              {pastCutoff ? "chicken (closed)" : "chicken"}
             </span>
           </label>
         )}
@@ -209,90 +222,6 @@ export function MealPlanTable({
         Changes aren&rsquo;t saved until you press{" "}
         <span className="font-semibold">Save</span>.
       </p>
-
-      {healthyAvailable && (
-      <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
-        <label className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold">
-            Healthy (chicken) meals{" "}
-            {allowHealthySlots ? "this week" : "each week"}:
-          </span>
-          {/* Mon–Sat the number is settled for the week, so it's shown as
-              plain text rather than an editable field. */}
-          {locked ? (
-            <span className="font-semibold">{quota}</span>
-          ) : (
-            <input
-              type="number"
-              min={0}
-              max={MAX_HEALTHY}
-              className="fh-input w-20"
-              value={quotaText}
-              onChange={(e) => setQuotaValue(e.target.value)}
-              onBlur={fillBlankQuota}
-            />
-          )}
-          <span className="text-sm">of {MAX_HEALTHY} max</span>
-        </label>
-        <p className="mt-2 text-sm">
-          {allowHealthySlots ? (
-            <>
-              {locked && <>🔒 Locked until Saturday — </>}
-              <span className="font-semibold">{left} left</span>{" "}
-              to use — tick &ldquo;chicken&rdquo; on a dinner below to swap
-              its main dish.
-            </>
-          ) : (
-            <>
-              You&rsquo;ll pick which meals on the day over on{" "}
-              <span className="font-semibold">This Week</span>. This number
-              refills every week.
-            </>
-          )}
-        </p>
-        {allowHealthySlots && standingQuota === 0 && quota > 0 && (
-          <p className="mt-2 text-sm">
-            Heads up — this is a <span className="font-semibold">one-week</span>{" "}
-            number. Set it on <span className="font-semibold">Default Plan</span>{" "}
-            to get it automatically every week instead.
-          </p>
-        )}
-        <p className="mt-2 text-sm">
-          You can change this number{" "}
-          <span className="font-semibold">Saturday and Sunday</span>. Whatever
-          it says when Sunday ends is what you get for the week — the house
-          shops Monday off that total.
-        </p>
-      </div>
-      )}
-
-      {showAllergens && (
-        <div className="p-4 bg-fh-white border-2 border-fh-green rounded max-w-xl">
-          <label className="block">
-            <span className="font-semibold">Allergies / dietary restrictions</span>
-            <span className="block mt-1 text-sm">
-              Anything the kitchen needs to know — e.g. &ldquo;celiac, no
-              gluten&rdquo;. Leave blank if none.
-            </span>
-            <input
-              type="text"
-              maxLength={200}
-              className="fh-input mt-2"
-              placeholder="e.g. celiac — no gluten"
-              value={allergens}
-              onChange={(e) => {
-                setAllergens(e.target.value);
-                clearFeedback();
-              }}
-            />
-          </label>
-          <p className="mt-2 text-sm">
-            This shows at the top of the{" "}
-            <span className="font-semibold">Plates</span> page, next to your
-            name, so the cook always sees it. That page is public.
-          </p>
-        </div>
-      )}
 
       <div className="overflow-x-auto">
         <table className="fh-table mx-auto">
@@ -324,6 +253,84 @@ export function MealPlanTable({
         </table>
       </div>
 
+      {healthyAvailable && (
+        <div className="p-3 bg-fh-white border-2 border-fh-green rounded max-w-xl text-sm">
+          <label className="flex flex-wrap items-center gap-2">
+            <span className="font-semibold">
+              Chicken dinners {allowHealthySlots ? "this week" : "each week"}:
+            </span>
+            {/* Mon–Fri the number is settled for the week, so it's shown as
+                plain text rather than an editable field. */}
+            {locked ? (
+              <span className="font-semibold">{quota}</span>
+            ) : (
+              <input
+                type="number"
+                min={0}
+                max={MAX_HEALTHY}
+                // .fh-input is width:100%, so the utility needs to win here.
+                className="fh-input !w-20"
+                value={quotaText}
+                onChange={(e) => setQuotaValue(e.target.value)}
+                onBlur={fillBlankQuota}
+              />
+            )}
+            <span>of {MAX_HEALTHY} max</span>
+            {allowHealthySlots && (
+              <span className="font-semibold">
+                {locked && "🔒 "}
+                {left} left
+              </span>
+            )}
+          </label>
+          <p className="mt-1">
+            {allowHealthySlots ? (
+              <>
+                Mon, Tue and Thu dinners — tick them in the grid above. Each
+                one closes at 4:30pm that day. The number itself can only be
+                changed Saturday and Sunday.
+              </>
+            ) : (
+              <>
+                Mon, Tue and Thu dinners. This refills every week; you pick
+                which ones on <span className="font-semibold">This Week</span>.
+              </>
+            )}
+          </p>
+          {allowHealthySlots && standingQuota === 0 && quota > 0 && (
+            <p className="mt-1">
+              One-week number — set it on{" "}
+              <span className="font-semibold">Default Plan</span> to get it
+              automatically every week.
+            </p>
+          )}
+        </div>
+      )}
+
+      <MealStatusLegend showHealthy={healthyAvailable} />
+
+      {showAllergens && (
+        <div className="p-3 bg-fh-white border-2 border-fh-green rounded max-w-xl text-sm">
+          <label className="block">
+            <span className="font-semibold">Allergies / dietary restrictions</span>
+            <input
+              type="text"
+              maxLength={200}
+              className="fh-input mt-1"
+              placeholder="e.g. celiac — no gluten"
+              value={allergens}
+              onChange={(e) => {
+                setAllergens(e.target.value);
+                clearFeedback();
+              }}
+            />
+          </label>
+          <p className="mt-1">
+            Blank if none. Shows at the top of the public{" "}
+            <span className="font-semibold">Plates</span> page next to your name.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

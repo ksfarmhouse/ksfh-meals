@@ -82,10 +82,10 @@ export function RosterManager({ initial }: Props) {
     setRemoveMsg(null);
     startTransition(async () => {
       const res = await removeMember(id);
-      if (res?.ok) {
+      if (res.ok) {
         setRows((rs) => rs.filter((r) => r.id !== id));
         setRemoveMsg(res.message);
-      } else if (res) {
+      } else {
         setRemoveMsg(res.error);
       }
     });

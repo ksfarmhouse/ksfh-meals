@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { prisma } from "@/app/_lib/prisma";
-import { RosterManager, type RosterRow } from "./RosterManager";
+import { RosterManager } from "./RosterManager";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +13,6 @@ export default async function RosterPage() {
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
     select: { id: true, firstName: true, lastName: true, houseStatus: true },
   });
-  const rows: RosterRow[] = members.map((m) => ({
-    id: m.id,
-    firstName: m.firstName,
-    lastName: m.lastName,
-    houseStatus: m.houseStatus,
-  }));
 
   return (
     <div>
@@ -28,7 +22,7 @@ export default async function RosterPage() {
           Back to Admin
         </Link>
       </div>
-      <RosterManager initial={rows} />
+      <RosterManager initial={members} />
     </div>
   );
 }

@@ -15,7 +15,6 @@ import { useState } from "react";
 import { fetchMemberPlan } from "@/app/_actions/fetchMember";
 import { saveWeeklyPlan, saveDefaultPlan } from "@/app/_actions/plans";
 import { MealPlanTable } from "./MealPlanTable";
-import { MealStatusLegend } from "./MealStatusLegend";
 
 type Mode = "weekly" | "default";
 
@@ -123,7 +122,6 @@ export function PlanEditor({ mode }: Props) {
         saveAction={mode === "weekly" ? saveWeeklyPlan : saveDefaultPlan}
         planLabel={mode === "weekly" ? "this week's plan" : "default plan"}
       />
-      <MealStatusLegend showHealthy={member.healthyAvailable} />
     </div>
   );
 }

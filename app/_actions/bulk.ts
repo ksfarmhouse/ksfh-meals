@@ -10,7 +10,10 @@
 //                         at the start of a semester / after a break.
 //   promoteNewMembers   — flips every NewMember to InHouse (after initiation).
 //
-// All three are admin-gated by middleware.ts since they live under /admin.
+// All three are admin-gated by middleware.ts: they're only called from pages
+// under /admin, so the action POST goes to an /admin URL and hits the
+// /admin/:path* matcher. The gate follows the CALLING page's URL, not where
+// this file happens to live.
 
 "use server";
 
@@ -20,9 +23,8 @@ import {
   LUNCH_SLOTS,
   DINNER_SLOTS,
   MEAL_VALUES,
-  isActiveStatus,
   SLOT_COUNT,
-  emptyPlan,
+  defaultPlanForStatus,
 } from "@/app/_lib/meals";
 
 export type BulkResult = { ok: true; message: string } | { ok: false; error: string };
@@ -48,8 +50,15 @@ export type BulkResult = { ok: true; message: string } | { ok: false; error: str
 // Everything happens inside one transaction — if any update fails, none
 // of them apply, so counts can't get partially stranded.
 export async function rolloverMeals(): Promise<BulkResult> {
-  const members = await prisma.member.findMany();
-  let updated = 0;
+  const members = await prisma.member.findMany({
+    select: {
+      id: true,
+      houseStatus: true,
+      weeklyPlan: true,
+      defaultPlan: true,
+      defaultHealthyQuota: true,
+    },
+  });
   const lunchSet = new Set<number>(LUNCH_SLOTS);
   const dinnerSet = new Set<number>(DINNER_SLOTS);
 
@@ -67,7 +76,6 @@ export async function rolloverMeals(): Promise<BulkResult> {
           }
         }
       }
-      updated += 1;
       return prisma.member.update({
         where: { id: m.id },
         data: {
@@ -86,7 +94,7 @@ export async function rolloverMeals(): Promise<BulkResult> {
   revalidatePath("/plates");
   revalidatePath("/treasurer");
   revalidatePath("/this-week");
-  return { ok: true, message: `Rolled over ${updated} member(s).` };
+  return { ok: true, message: `Rolled over ${members.length} member(s).` };
 }
 
 // Reset: rebuild both plan arrays for everyone and zero out owed counts.
@@ -97,12 +105,9 @@ export async function resetMeals(): Promise<BulkResult> {
   const members = await prisma.member.findMany({
     select: { id: true, houseStatus: true },
   });
-  const allIn = emptyPlan(MEAL_VALUES.In);
-  const allOut = emptyPlan(MEAL_VALUES.Out);
-
   await prisma.$transaction(
     members.map((m) => {
-      const plan = isActiveStatus(m.houseStatus) ? allIn : allOut;
+      const plan = defaultPlanForStatus(m.houseStatus);
       return prisma.member.update({
         where: { id: m.id },
         data: {
