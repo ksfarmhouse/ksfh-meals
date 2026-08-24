@@ -31,9 +31,9 @@ export function MealStatusLegend({ showHealthy }: Props) {
           Late too. <strong>Mon, Tue and Thu dinners only</strong> (up to 3):
           Wednesday and Friday are out, and so are lunches. Two deadlines —
           you change <em>how many</em> on{" "}
-          <strong>Saturday or Sunday</strong> only, and each dinner&rsquo;s tick
-          box closes at <strong>4:30pm that day</strong>, when the cook needs
-          the count.
+          <strong>Saturday or Sunday</strong>{" "}
+          only, and each dinner&rsquo;s tick box closes at{" "}
+          <strong>4:30pm that day</strong>, when the cook needs the count.
         </li>
         )}
       </ul>

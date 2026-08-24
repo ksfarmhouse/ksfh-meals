@@ -25,6 +25,7 @@ import {
   MEAL_VALUES,
   SLOT_COUNT,
   defaultPlanForStatus,
+  healthySlotsForQuota,
 } from "@/app/_lib/meals";
 
 export type BulkResult = { ok: true; message: string } | { ok: false; error: string };
@@ -83,9 +84,14 @@ export async function rolloverMeals(): Promise<BulkResult> {
           lunchesOwed: { increment: lunchInc },
           dinnersOwed: { increment: dinnerInc },
           // Healthy (chicken) allowance is weekly: refill it from the
-          // member's standing number and clear the slots they spent it on.
+          // member's standing number and clear the slots they spent it on —
+          // unless that number is the full allowance, which ticks them all.
           healthyQuota: m.defaultHealthyQuota,
-          healthySlots: [],
+          healthySlots: healthySlotsForQuota(
+            m.defaultHealthyQuota,
+            [],
+            m.defaultPlan,
+          ),
         },
       });
     }),

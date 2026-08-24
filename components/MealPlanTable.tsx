@@ -294,6 +294,9 @@ export function MealPlanTable({
               <>
                 Mon, Tue and Thu dinners. This refills every week; you pick
                 which ones on <span className="font-semibold">This Week</span>.
+                {quota >= MAX_HEALTHY && (
+                  <> Taking all {MAX_HEALTHY} ticks every dinner for you.</>
+                )}
               </>
             )}
           </p>

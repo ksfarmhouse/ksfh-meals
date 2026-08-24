@@ -93,6 +93,19 @@ export function healthyRemaining(quota: number, slots: number[]): number {
   return Math.max(0, Math.min(quota, MAX_HEALTHY) - slots.length);
 }
 
+// Taking the FULL allowance leaves nothing to choose, so every eligible dinner
+// gets ticked automatically. This lives here rather than in the browser so it
+// holds no matter where the number came from — This Week, Default Plan, or the
+// weekly rollover. Dinners the member marked Out are still skipped.
+export function healthySlotsForQuota(
+  quota: number,
+  slots: number[],
+  plan: number[],
+): number[] {
+  const wanted = quota >= MAX_HEALTHY ? [...HEALTHY_SLOTS] : slots;
+  return normalizeHealthySlots(wanted, plan, quota);
+}
+
 // ===== CHICKEN RULES =========================================================
 // The two switches below are the only things to change when the house wants
 // different behavior. Everything else follows from them.

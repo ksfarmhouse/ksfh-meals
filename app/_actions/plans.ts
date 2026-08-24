@@ -26,6 +26,7 @@ import {
   healthyAvailableFor,
   isQuotaEditable,
   isDinnerChoiceLocked,
+  healthySlotsForQuota,
 } from "@/app/_lib/meals";
 
 export type HealthyInput = { quota: number; slots: number[] };
@@ -100,9 +101,15 @@ export async function saveWeeklyPlan(
     // Deadline 2 — which ones. A dinner past its 4:30pm cutoff keeps whatever
     // is already stored: the cook has that night's count, so the member can
     // neither add a chicken plate nor take one back.
+    // A full allowance means every eligible dinner, whatever the browser sent.
+    const wanted = healthySlotsForQuota(
+      parsed.data.healthy.quota,
+      parsed.data.healthy.slots,
+      parsed.data.plan,
+    );
     const merged = [
       ...member.healthySlots.filter((slot) => isDinnerChoiceLocked(slot)),
-      ...parsed.data.healthy.slots.filter((slot) => !isDinnerChoiceLocked(slot)),
+      ...wanted.filter((slot) => !isDinnerChoiceLocked(slot)),
     ];
 
     const checked = checkHealthy(
@@ -159,7 +166,14 @@ export async function saveDefaultPlan(
       defaultPlan: parsed.data.plan,
       weeklyPlan: parsed.data.plan,
       defaultHealthyQuota: quota,
-      ...(carriesIntoThisWeek ? { healthyQuota: quota, healthySlots: [] } : {}),
+      ...(carriesIntoThisWeek
+        ? {
+            healthyQuota: quota,
+            // A full allowance ticks every dinner; anything less is still
+            // chosen day-of on This Week, so it starts empty.
+            healthySlots: healthySlotsForQuota(quota, [], parsed.data.plan),
+          }
+        : {}),
       // Blank means "nothing to report" — store null so it doesn't render.
       allergens: parsed.data.allergens === "" ? null : parsed.data.allergens,
     },
