@@ -100,7 +100,7 @@ export function healthyRemaining(quota: number, slots: number[]): number {
 // TESTING SWITCH. true = deadlines enforced (normal operation).
 //                 false = nothing is ever locked, so the whole flow can be
 //                 exercised on any day at any time.
-export const CHICKEN_LOCKS_ENABLED = true;
+export const CHICKEN_LOCKS_ENABLED = false;
 
 // Who can see the chicken option at all, while it's still being built out.
 // Set to null to open it to the whole house — that one change is the launch.
