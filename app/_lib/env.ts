@@ -7,8 +7,8 @@
 // a confusing runtime error (Prisma "DATABASE_URL not found", session
 // "SESSION_SECRET must be at least 32 chars", etc.).
 //
-// Optional vars (FILES_LAN_URL, FIND_ID_PASSWORD) get a sensible default, so
-// adding one doesn't take the site down until it's set in Vercel.
+// Optional vars (FILES_LAN_URL) get a sensible default, so adding one doesn't
+// take the site down until it's set in Vercel.
 
 import { z } from "zod";
 
@@ -24,10 +24,6 @@ const EnvSchema = z.object({
     .url()
     .optional()
     .default("http://192.168.1.153:8080/"),
-  // Shared house password for /find-id. Defaulted so the page works without
-  // any Vercel change; set FIND_ID_PASSWORD there to rotate it without a
-  // code edit + redeploy.
-  FIND_ID_PASSWORD: z.string().min(1).optional().default("ksfh1921"),
 });
 
 const parsed = EnvSchema.safeParse({
@@ -36,7 +32,6 @@ const parsed = EnvSchema.safeParse({
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   SESSION_SECRET: process.env.SESSION_SECRET,
   FILES_LAN_URL: process.env.FILES_LAN_URL,
-  FIND_ID_PASSWORD: process.env.FIND_ID_PASSWORD,
 });
 
 if (!parsed.success) {

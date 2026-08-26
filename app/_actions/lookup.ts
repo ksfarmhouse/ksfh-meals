@@ -1,9 +1,7 @@
 // Public lookup actions:
 //
 //   lookupMemberByName — case- and whitespace-insensitive match on fullName,
-//                        used by /find-id. Password-gated: the check runs
-//                        HERE, server-side, so no ID is ever sent to a
-//                        browser that didn't supply the password.
+//                        used by the public /find-id page.
 //   lookupMemberById   — strict 4-char ID match, used by /files to gate the
 //                        in-house file-server link. Returns the URL itself on
 //                        success; see the note on that function for why.
@@ -26,7 +24,6 @@ const FILES_OPEN_TO_NEW_MEMBERS = false;
 
 const NameSchema = z.object({
   name: z.string().min(1, "Name is required").max(120),
-  password: z.string().min(1, "Password is required"),
 });
 
 const IdSchema = z.object({
@@ -41,20 +38,10 @@ export async function lookupMemberByName(
   _prev: LookupNameResult | null,
   formData: FormData,
 ): Promise<LookupNameResult> {
-  const parsed = NameSchema.safeParse({
-    name: formData.get("name"),
-    password: formData.get("password"),
-  });
+  const parsed = NameSchema.safeParse({ name: formData.get("name") });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
-
-  // Checked before we touch the database, so a wrong password reveals
-  // nothing at all — not even whether that name is on the roster.
-  if (parsed.data.password !== env.FIND_ID_PASSWORD) {
-    return { ok: false, error: "Wrong password." };
-  }
-
   const target = normalizeName(parsed.data.name);
 
   // We index fullName but it isn't normalized at rest, so scan and compare normalized.
