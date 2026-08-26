@@ -54,8 +54,15 @@ model Member {
   // array. That keeps no array length load-bearing here — see the note in
   // README.md about padding the fixed-length plan arrays.
   healthyQuota        Int   @default(0)  // swaps allowed this week (0–3)
-  defaultHealthyQuota Int   @default(0)  // standing number, restored at rollover
+  // UNUSED since the count became weekly-reset and This-Week-only. Kept
+  // rather than dropped so a live migration isn't needed; safe to remove.
+  defaultHealthyQuota Int   @default(0)
   healthySlots        Int[] @default([]) // slots spent so far this week
+  // Which chicken-week the two fields above belong to, as the date of that
+  // week's Saturday ("2026-08-22"). The count resets to 0 every Saturday
+  // 00:00; rather than run a scheduled job, anything tagged with an older
+  // week simply reads as 0. See chickenWeekOf() in app/_lib/meals.ts.
+  healthyWeekOf       String?
 
   // Free-text allergies / dietary restrictions, entered by the member on
   // /default-plan. Null or empty means nothing to report. Shown at the top of

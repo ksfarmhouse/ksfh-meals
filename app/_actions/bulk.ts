@@ -25,7 +25,6 @@ import {
   MEAL_VALUES,
   SLOT_COUNT,
   defaultPlanForStatus,
-  healthySlotsForQuota,
 } from "@/app/_lib/meals";
 
 export type BulkResult = { ok: true; message: string } | { ok: false; error: string };
@@ -37,8 +36,9 @@ export type BulkResult = { ok: true; message: string } | { ok: false; error: str
 // itself doesn't touch money.
 //
 // After tallying, copies each member's permanent defaultPlan back into
-// their current weeklyPlan to prepare for the next week, and refills their
-// healthy (chicken) allowance from defaultHealthyQuota.
+// their current weeklyPlan to prepare for the next week. It deliberately
+// leaves the chicken count alone: that resets itself every Saturday 00:00
+// via the week tag (chickenWeekOf), so rollover timing can't disturb it.
 //
 // Note the billing loop below is deliberately blind to the healthy option: a
 // chicken meal is a swap, not a skip, so it's still an attended meal and still
@@ -57,7 +57,6 @@ export async function rolloverMeals(): Promise<BulkResult> {
       houseStatus: true,
       weeklyPlan: true,
       defaultPlan: true,
-      defaultHealthyQuota: true,
     },
   });
   const lunchSet = new Set<number>(LUNCH_SLOTS);
@@ -83,15 +82,6 @@ export async function rolloverMeals(): Promise<BulkResult> {
           weeklyPlan: m.defaultPlan,
           lunchesOwed: { increment: lunchInc },
           dinnersOwed: { increment: dinnerInc },
-          // Healthy (chicken) allowance is weekly: refill it from the
-          // member's standing number and clear the slots they spent it on —
-          // unless that number is the full allowance, which ticks them all.
-          healthyQuota: m.defaultHealthyQuota,
-          healthySlots: healthySlotsForQuota(
-            m.defaultHealthyQuota,
-            [],
-            m.defaultPlan,
-          ),
         },
       });
     }),
@@ -124,6 +114,7 @@ export async function resetMeals(): Promise<BulkResult> {
           healthyQuota: 0,
           defaultHealthyQuota: 0,
           healthySlots: [],
+          healthyWeekOf: null,
         },
       });
     }),

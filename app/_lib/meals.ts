@@ -26,6 +26,7 @@
 // Two independent deadlines govern it, both in the CHICKEN RULES section below:
 //   HOW MANY  (healthyQuota)  — set over the weekend, fixed Mon–Fri.
 //   WHICH ONES (healthySlots) — each dinner locks at 4:30pm on its own day.
+// The count itself resets to 0 every Saturday 00:00 — see chickenWeekOf().
 // Both are off when CHICKEN_LOCKS_ENABLED is false, which is the switch to
 // flip for testing.
 
@@ -132,10 +133,20 @@ const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const
 
 // House-local weekday and clock, read in one pass so both can't disagree
 // across a midnight boundary. Weekday is JS-style: 0=Sun … 6=Sat.
-function houseNow(now: Date): { day: number; hour: number; minute: number } {
+function houseNow(now: Date): {
+  day: number;
+  hour: number;
+  minute: number;
+  year: number;
+  month: number;
+  date: number;
+} {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: HOUSE_TIME_ZONE,
     weekday: "short",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
@@ -145,6 +156,9 @@ function houseNow(now: Date): { day: number; hour: number; minute: number } {
     day: (WEEKDAY_NAMES as readonly string[]).indexOf(get("weekday")),
     hour: Number(get("hour")),
     minute: Number(get("minute")),
+    year: Number(get("year")),
+    month: Number(get("month")),
+    date: Number(get("day")),
   };
 }
 
@@ -162,6 +176,36 @@ const QUOTA_EDIT_DAYS = [6, 0]; // Saturday, Sunday
 export function isQuotaEditable(now: Date = new Date()): boolean {
   if (!CHICKEN_LOCKS_ENABLED) return true;
   return QUOTA_EDIT_DAYS.includes(houseNow(now).day);
+}
+
+// --- The weekly reset -----------------------------------------------------
+// Everyone's count drops back to 0 every Saturday at 00:00 house time, and
+// they set it again for the week ahead.
+//
+// There's no scheduled job on this app, so instead of writing zeros to 79 rows
+// at midnight, each stored count is TAGGED with the week it belongs to. A tag
+// from an earlier week reads as 0. That's equivalent, needs no cron, and stays
+// correct even if nobody opens the site for a month.
+//
+// The tag is the date of that week's Saturday, e.g. "2026-08-22".
+export function chickenWeekOf(now: Date = new Date()): string {
+  const { day, year, month, date } = houseNow(now);
+  const sinceSaturday = (day + 1) % 7; // Sat->0, Sun->1, … Fri->6
+  // Date-only arithmetic in UTC: no clock component, so DST can't shift it.
+  const saturday = new Date(Date.UTC(year, month - 1, date));
+  saturday.setUTCDate(saturday.getUTCDate() - sinceSaturday);
+  return saturday.toISOString().slice(0, 10);
+}
+
+// A member's count and picks as they stand right now — zeroed if what's
+// stored belongs to a week that has already rolled over.
+export function currentHealthy(
+  stored: { healthyQuota: number; healthySlots: number[]; healthyWeekOf: string | null },
+  now: Date = new Date(),
+): { quota: number; slots: number[] } {
+  return stored.healthyWeekOf === chickenWeekOf(now)
+    ? { quota: stored.healthyQuota, slots: stored.healthySlots }
+    : { quota: 0, slots: [] };
 }
 
 // --- Deadline 2: WHICH ONES ---------------------------------------------

@@ -6,7 +6,11 @@
 
 import { z } from "zod";
 import { prisma } from "@/app/_lib/prisma";
-import { healthyAvailableFor, isQuotaEditable } from "@/app/_lib/meals";
+import {
+  currentHealthy,
+  healthyAvailableFor,
+  isQuotaEditable,
+} from "@/app/_lib/meals";
 
 const IdSchema = z.string().trim().length(4, "ID must be 4 characters");
 
@@ -19,8 +23,8 @@ export type MemberPlanResult =
       defaultPlan: number[];
       // Healthy (chicken) option: this week's allowance and which slots it's
       // been spent on, plus the standing number restored at each rollover.
+      // Already zeroed if what's stored belongs to a week that has rolled.
       healthyQuota: number;
-      defaultHealthyQuota: number;
       healthySlots: number[];
       // False while the chicken option is limited to HEALTHY_PREVIEW_IDS.
       healthyAvailable: boolean;
@@ -45,21 +49,23 @@ export async function fetchMemberPlan(id: string): Promise<MemberPlanResult> {
       weeklyPlan: true,
       defaultPlan: true,
       healthyQuota: true,
-      defaultHealthyQuota: true,
       healthySlots: true,
+      healthyWeekOf: true,
       allergens: true,
     },
   });
   if (!m) return { ok: false, error: "Member not found" };
+
+  // Anything tagged with an older chicken-week reads as 0 — the weekly reset.
+  const healthy = currentHealthy(m);
   return {
     ok: true,
     id: m.id,
     fullName: m.fullName,
     weeklyPlan: m.weeklyPlan,
     defaultPlan: m.defaultPlan,
-    healthyQuota: m.healthyQuota,
-    defaultHealthyQuota: m.defaultHealthyQuota,
-    healthySlots: m.healthySlots,
+    healthyQuota: healthy.quota,
+    healthySlots: healthy.slots,
     healthyAvailable: healthyAvailableFor(m.id),
     allergens: m.allergens ?? "",
     quotaEditable: isQuotaEditable(),

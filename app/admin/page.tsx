@@ -9,6 +9,7 @@ import { prisma } from "@/app/_lib/prisma";
 import { MenuForm } from "./MenuForm";
 import { BulkActions } from "./BulkActions";
 import { LogoutButton } from "./LogoutButton";
+import { chickenWeekOf } from "@/app/_lib/meals";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +21,14 @@ export default async function AdminPage() {
   // Chicken tally for the week. The SUM of everyone's quota is the number the
   // chef needs — it's what people have claimed for the week, known before any
   // of them pick which dinners to spend it on.
+  // Scoped to the current chicken-week: counts from a week that has already
+  // rolled over are stale and must not reach the chef's total.
+  const thisWeek = { healthyWeekOf: chickenWeekOf() };
   const chickenTotal =
-    (await prisma.member.aggregate({ _sum: { healthyQuota: true } }))._sum
-      .healthyQuota ?? 0;
+    (await prisma.member.aggregate({ _sum: { healthyQuota: true }, where: thisWeek }))
+      ._sum.healthyQuota ?? 0;
   const chickenMembers = await prisma.member.count({
-    where: { healthyQuota: { gt: 0 } },
+    where: { ...thisWeek, healthyQuota: { gt: 0 } },
   });
 
   return (

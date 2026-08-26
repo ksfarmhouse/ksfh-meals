@@ -3,6 +3,7 @@
 
 import { prisma } from "@/app/_lib/prisma";
 import { PlatesView } from "./PlatesView";
+import { currentHealthy } from "@/app/_lib/meals";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,17 @@ export default async function PlatesPage() {
       fullName: true,
       weeklyPlan: true,
       healthySlots: true,
+      healthyWeekOf: true,
       allergens: true,
     },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
   });
+
+  // Drop picks tagged with an earlier chicken-week — they reset Saturday.
+  const current = members.map((m) => ({
+    ...m,
+    healthySlots: currentHealthy({ ...m, healthyQuota: 0 }).slots,
+  }));
 
   return (
     <div>
@@ -25,7 +33,7 @@ export default async function PlatesPage() {
         Pick a day to see early/late plate counts and the kitchen set-for
         number.
       </p>
-      <PlatesView members={members} />
+      <PlatesView members={current} />
     </div>
   );
 }

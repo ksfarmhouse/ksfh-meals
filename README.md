@@ -211,6 +211,17 @@ Vercel runs in UTC and a naive check would flip the window six hours early.
 Monday the total is final — `/admin` shows it under the Weekly Menu save button,
 and that's the figure handed to the chef before the week's shopping.
 
+The count is set **only on `/this-week`** — `/default-plan` carries the meal
+grid and allergies, nothing chicken-related.
+
+It **resets to 0 every Saturday 00:00** house time. There's no scheduled job:
+each stored count is tagged with `healthyWeekOf`, the date of its week's
+Saturday, and `currentHealthy()` reads anything older as 0. That's equivalent
+to a midnight cron, needs no infrastructure, and stays correct even if nobody
+opens the site for a month. Because the tag owns the reset, `rolloverMeals()`
+deliberately no longer touches the chicken fields — rollover timing can't
+disturb them.
+
 **`CHICKEN_LOCKS_ENABLED`** in `app/_lib/meals.ts` turns *both* deadlines off in
 one line. That's the switch to flip for testing; set it back to `true` for
 normal operation.

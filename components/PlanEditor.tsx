@@ -30,7 +30,6 @@ export function PlanEditor({ mode }: Props) {
     plan: number[];
     healthyQuota: number;
     healthySlots: number[];
-    standingQuota: number;
     allergens: string;
     healthyAvailable: boolean;
     quotaEditable: boolean;
@@ -55,12 +54,8 @@ export function PlanEditor({ mode }: Props) {
       plan: mode === "weekly" ? res.weeklyPlan : res.defaultPlan,
       // Weekly mode edits this week's allowance; default mode edits the
       // standing number that refills it at each rollover.
-      healthyQuota:
-        mode === "weekly" ? res.healthyQuota : res.defaultHealthyQuota,
-      healthySlots: mode === "weekly" ? res.healthySlots : [],
-      // Used on This Week to warn when a number was set for this week only
-      // and will reset to 0 at the next rollover.
-      standingQuota: res.defaultHealthyQuota,
+      healthyQuota: res.healthyQuota,
+      healthySlots: res.healthySlots,
       allergens: res.allergens,
       healthyAvailable: res.healthyAvailable,
       quotaEditable: res.quotaEditable,
@@ -117,7 +112,6 @@ export function PlanEditor({ mode }: Props) {
         healthyAvailable={member.healthyAvailable}
         initialAllergens={member.allergens}
         showAllergens={mode === "default"}
-        standingQuota={member.standingQuota}
         quotaEditable={member.quotaEditable}
         saveAction={mode === "weekly" ? saveWeeklyPlan : saveDefaultPlan}
         planLabel={mode === "weekly" ? "this week's plan" : "default plan"}

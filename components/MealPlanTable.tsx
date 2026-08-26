@@ -54,9 +54,6 @@ interface Props {
   healthyAvailable: boolean;
   // Allergies are owned by /default-plan, so the box only renders there.
   showAllergens: boolean;
-  // The member's standing number. On This Week, a 0 here means whatever they
-  // set is a one-week number that rollover will wipe.
-  standingQuota: number;
   // False Mon–Fri: the number is recorded on Sunday and fixed for the week.
   quotaEditable: boolean;
   saveAction: SavePlanFn;
@@ -73,7 +70,6 @@ export function MealPlanTable({
   initialAllergens,
   showAllergens,
   allowHealthySlots,
-  standingQuota,
   quotaEditable,
   saveAction,
   planLabel,
@@ -253,7 +249,7 @@ export function MealPlanTable({
         </table>
       </div>
 
-      {healthyAvailable && (
+      {healthyAvailable && allowHealthySlots && (
         <div className="p-3 bg-fh-white border-2 border-fh-green rounded max-w-xl text-sm">
           <label className="flex flex-wrap items-center gap-2">
             <span className="font-semibold">
@@ -300,17 +296,11 @@ export function MealPlanTable({
               </>
             )}
           </p>
-          {allowHealthySlots && standingQuota === 0 && quota > 0 && (
-            <p className="mt-1">
-              One-week number — set it on{" "}
-              <span className="font-semibold">Default Plan</span> to get it
-              automatically every week.
-            </p>
-          )}
         </div>
       )}
 
-      <MealStatusLegend showHealthy={healthyAvailable} />
+      {/* Chicken only exists on This Week now, so only explain it there. */}
+      <MealStatusLegend showHealthy={healthyAvailable && allowHealthySlots} />
 
       {showAllergens && (
         <div className="p-3 bg-fh-white border-2 border-fh-green rounded max-w-xl text-sm">
