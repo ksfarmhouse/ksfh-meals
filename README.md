@@ -205,6 +205,12 @@ rather than by hiding controls in the browser:
   needs that night's count. Nothing is locked on Sat/Sun, since that's the
   planning window for the week ahead.
 
+Marking a dinner **Out** gives the swap back — you can't be served chicken at a
+meal you aren't attending, so `normalizeHealthySlots()` drops the pick and the
+count goes up. The exception is a dinner that has already passed: the cook
+plated it hours ago, so the swap stays spent. `isDinnerChoiceLocked()` is
+exactly that "already passed" test, which is why the same helper governs both.
+
 Weekdays and clock are resolved in `America/Chicago` (`HOUSE_TIME_ZONE`) because
 Vercel runs in UTC and a naive check would flip the window six hours early.
 

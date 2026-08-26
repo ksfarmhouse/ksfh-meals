@@ -74,16 +74,27 @@ export function isHealthyEligible(slot: number): boolean {
 }
 
 // Cleans up a set of healthy-flagged slots so the client editor and the server
-// action can't disagree about what's allowed. Drops ineligible slots,
-// duplicates, and any slot marked Out (you can't swap a meal you aren't
-// eating), sorts them, then trims to the quota (keeping the earliest meals).
+// action can't disagree about what's allowed. Drops ineligible slots and
+// duplicates, sorts them, then trims to the quota (keeping the earliest
+// meals).
+//
+// Marking a dinner Out gives the swap back — you can't be served chicken at a
+// meal you're not attending. The exception is a dinner that has already passed
+// for the week: the cook plated that chicken hours ago, so the swap is spent
+// and dropping to Out afterwards refunds nothing. isDinnerChoiceLocked is
+// exactly that "already passed" test, so a locked pick survives either way.
 export function normalizeHealthySlots(
   slots: number[],
   plan: number[],
   quota: number,
+  now: Date = new Date(),
 ): number[] {
   const cleaned = Array.from(new Set(slots))
-    .filter((s) => isHealthyEligible(s) && plan[s] !== MEAL_VALUES.Out)
+    .filter(
+      (s) =>
+        isHealthyEligible(s) &&
+        (plan[s] !== MEAL_VALUES.Out || isDinnerChoiceLocked(s, now)),
+    )
     .sort((a, b) => a - b);
   const cap = Math.max(0, Math.min(quota, MAX_HEALTHY));
   return cleaned.slice(0, cap);
