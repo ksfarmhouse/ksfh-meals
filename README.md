@@ -178,15 +178,11 @@ Three `Member` fields drive it:
 | `defaultHealthyQuota` | Their standing number. `rolloverMeals()` copies it into `healthyQuota` each week. |
 | `healthySlots` | Which slots they've spent it on this week, as slot **indexes** (e.g. `[3, 7]`). |
 
-**Currently in preview.** `HEALTHY_PREVIEW_IDS` in `app/_lib/meals.ts` limits the
-whole feature to a list of member IDs while it's still being built out.
-Everyone else sees no chicken controls, no legend entry, and the server pins
-their quota and slots to 0 no matter what the browser posts. `/plates` shows
-the chicken card only when someone actually has a swap flagged, so the house
-sees no trace of it until it's in real use.
-
-**To launch it to the whole house, set `HEALTHY_PREVIEW_IDS = null`.** That one
-change re-enables everything; nothing else needs touching.
+**Live to the whole house.** `HEALTHY_PREVIEW_IDS` in `app/_lib/meals.ts` is
+`null`, meaning everyone gets it. Putting member IDs back in that array closes
+it down to a preview: everyone else then sees no chicken controls, no legend
+entry, and the server pins their quota and slots to 0 no matter what the
+browser posts.
 
 Eligible meals are **Mon, Tue and Thu dinner** (slots 1, 3, 7) —
 `HEALTHY_SLOTS` in `app/_lib/meals.ts`. Wednesday is excluded, Friday dinner is
@@ -204,6 +200,11 @@ rather than by hiding controls in the browser:
   at **4:30pm on its own day** (`DINNER_CUTOFF_HOUR` / `_MINUTE`), when the cook
   needs that night's count. Nothing is locked on Sat/Sun, since that's the
   planning window for the week ahead.
+
+A member can be **Early or Late and still take the chicken swap** — the two are
+independent. On `/plates` those names carry a `— chicken` note in the Early and
+Late lists, so whoever sets that plate aside knows what to make; they also stay
+on the Chicken card, which is the cook's total.
 
 Marking a dinner **Out** gives the swap back — you can't be served chicken at a
 meal you aren't attending, so `normalizeHealthySlots()` drops the pick and the

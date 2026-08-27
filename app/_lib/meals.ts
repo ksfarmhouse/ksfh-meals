@@ -122,14 +122,17 @@ export function healthySlotsForQuota(
 // The two switches below are the only things to change when the house wants
 // different behavior. Everything else follows from them.
 
-// TESTING SWITCH. true = deadlines enforced (normal operation).
+// TESTING SWITCH. true = deadlines enforced (normal operation, and the
+//                 current setting).
 //                 false = nothing is ever locked, so the whole flow can be
-//                 exercised on any day at any time.
-export const CHICKEN_LOCKS_ENABLED = false;
+//                 exercised on any day at any time. Also disables the
+//                 no-refund-after-a-dinner-has-passed rule, since with no
+//                 deadlines nothing counts as passed.
+export const CHICKEN_LOCKS_ENABLED = true;
 
-// Who can see the chicken option at all, while it's still being built out.
-// Set to null to open it to the whole house — that one change is the launch.
-export const HEALTHY_PREVIEW_IDS: readonly string[] | null = ["1327"];
+// Who can see the chicken option. null = the whole house, which is the live
+// setting. Put member IDs here to close it back down to a preview.
+export const HEALTHY_PREVIEW_IDS: readonly string[] | null = null;
 
 export function healthyAvailableFor(memberId: string): boolean {
   return HEALTHY_PREVIEW_IDS === null || HEALTHY_PREVIEW_IDS.includes(memberId);

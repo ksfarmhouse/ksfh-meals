@@ -14,6 +14,7 @@
 // it on every visit.
 //
 //   - who flagged the healthy (chicken) option AT DINNER — its own card, plus
+//     a "— chicken" note beside the name on the Early/Late lists, plus
 //     a count on the Early Dinner card so the cook knows how many chicken
 //     plates to make. Lunch is deliberately excluded: the kitchen only needs
 //     the chicken count for the cooked dinner service.
@@ -44,6 +45,10 @@ interface Props {
   members: MemberForPlates[];
 }
 
+// A member can be Early or Late AND have a chicken swap that night — the two
+// are independent. Whoever sets that plate aside needs to know it's chicken,
+// so the name carries the note here rather than only appearing on the Chicken
+// card further down.
 function namesWith(
   members: MemberForPlates[],
   slot: number,
@@ -51,7 +56,9 @@ function namesWith(
 ): string[] {
   return members
     .filter((m) => m.weeklyPlan[slot] === value)
-    .map((m) => m.fullName)
+    .map((m) =>
+      m.healthySlots.includes(slot) ? `${m.fullName} — chicken` : m.fullName,
+    )
     .sort();
 }
 
